@@ -1,0 +1,26 @@
+name: Atualizar tabelas de IRS
+
+on:
+  schedule:
+    - cron: "10 12 * * *"
+    - cron: "10 18 * * *"
+    - cron: "40 22 * * *"
+  push:
+    paths:
+      - "tabelas-irs/atualizar_irs.py"
+      - ".github/workflows/atualizar-irs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pypdf
+      - run: python3 tabelas-irs/atualizar_irs.py
