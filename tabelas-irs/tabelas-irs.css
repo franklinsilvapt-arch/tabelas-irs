@@ -14,26 +14,27 @@
 #lf-dp .irs-t tr.is-on td:first-child{box-shadow:inset 3px 0 0 var(--color-brand-600);padding-left:10px}
 #lf-dp .irs-t tr.is-on td:last-child{padding-right:10px}
 #lf-dp .irs-tu{display:inline-block;margin-left:8px;padding:1px 8px;border-radius:var(--radius-full);background:var(--color-brand-600);color:#fff;font-size:11px;font-weight:600;line-height:16px;vertical-align:1px}
-#lf-dp .irs-card{background:var(--bg-white);border:4px solid var(--border-tertiary);border-radius:var(--radius-3xl);padding:28px 32px;text-align:left}
-#lf-dp .irs-card-t{font-size:18px;font-weight:500;line-height:28px;color:var(--text-primary);margin:0 0 4px}
-#lf-dp .irs-card-s{font-size:14px;line-height:20px;color:var(--text-quaternary);margin:0 0 20px}
-#lf-dp .irs-form{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:end}
-#lf-dp .irs-ou{display:flex;align-items:center;justify-content:center;height:46px}
-#lf-dp .irs-ou span{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:#3A4454;color:#fff;font-size:14px;font-weight:600;letter-spacing:.2px;text-transform:uppercase}
-#lf-dp .irs-form2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;align-items:end;margin-top:20px}
-#lf-dp .irs-check{grid-column:1 / 3;display:flex;align-items:center;gap:10px;font-size:14px;line-height:20px;color:var(--text-secondary);cursor:pointer;min-height:46px}
+#lf-dp .irs-calc{text-align:left}
+#lf-dp .irs-calc .grid.is-calculadora{display:block}
+#lf-dp .irs-calc .irs-gb{width:624px;max-width:100%;margin-left:auto;margin-right:auto;box-sizing:border-box}
+#lf-dp .irs-calc .form_input{color:var(--colors--text-primary,#202432)}
+#lf-dp .irs-select{-webkit-appearance:none;appearance:none;padding-right:36px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6l4 4 4-4' stroke='%233A4454' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;cursor:pointer}
+#lf-dp .irs-ou{display:flex;align-items:center;gap:12px;margin:14px 0 10px;font-size:13px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:#202432}
+#lf-dp .irs-ou::before,#lf-dp .irs-ou::after{content:"";flex:1;height:1px;background:#D0D5DD}
+#lf-dp .irs-ou span{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:#3A4454;color:#fff}
+#lf-dp .irs-hint{font-size:12px;line-height:18px;color:#4F5969;margin:8px 0 0}
+#lf-dp .irs-check{display:flex;align-items:center;gap:10px;font-size:14px;line-height:20px;color:#3A4454;cursor:pointer;margin:0}
 #lf-dp .irs-check input{width:18px;height:18px;margin:0;accent-color:#3A4454;flex-shrink:0}
-#lf-dp .irs-form2 .dp-btn{height:46px}
-#lf-dp .irs-res{margin-top:24px;border-top:1px solid var(--border-secondary)}
-#lf-dp .irs-res-t{font-size:12px;font-weight:600;line-height:18px;letter-spacing:.4px;text-transform:uppercase;color:#697386;margin:24px 0 4px}
-#lf-dp .irs-row{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:12px 0;border-bottom:1px dotted var(--border-secondary);font-size:14px;line-height:20px}
+#lf-dp .irs-res-t{font-size:16px;font-weight:500;line-height:24px;letter-spacing:-.2px;color:#202432;margin:0 0 4px}
+#lf-dp .irs-row{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:16px 0;border-bottom:1px dotted #E9ECF1;font-size:14px;line-height:20px}
 #lf-dp .irs-row span:first-child{color:#4F5969}
-#lf-dp .irs-row small{display:block;font-size:12px;line-height:18px;color:var(--text-quaternary)}
-#lf-dp .irs-row span:last-child{font-weight:600;color:var(--text-primary);text-align:right}
-#lf-dp .irs-row.is-hl span:first-child{font-size:16px;font-weight:600;color:var(--text-primary)}
-#lf-dp .irs-row.is-hl span:last-child{font-size:22px;font-weight:700;color:var(--color-brand-700)}
-#lf-dp .irs-resumo{font-size:14px;line-height:1.65;color:var(--text-secondary);margin:14px 0 0}
-#lf-dp .irs-resumo strong{color:var(--text-primary)}
+#lf-dp .irs-row small{display:block;font-size:12px;line-height:18px;color:#98A2B3}
+#lf-dp .irs-row span:last-child{font-weight:600;color:#202432;text-align:right}
+#lf-dp .irs-row.is-hl span:first-child{font-size:16px;font-weight:600;color:#202432}
+#lf-dp .irs-row.is-hl span:last-child{font-size:20px;font-weight:700}
+#lf-dp .irs-resumo{font-size:14px;line-height:1.65;color:#3A4454;margin:16px 0 0}
+#lf-dp .irs-resumo strong{color:#202432;font-weight:600}
+#lf-dp .irs-disc{margin:16px 0 0;padding-top:14px;border-top:1px dotted #E9ECF1;font-size:12px;line-height:1.5;color:#98A2B3}
 #lf-dp .irs-aviso{display:flex;gap:10px;margin:16px 0 0;padding:12px 14px;border-radius:var(--radius-xl);background:var(--color-warning-50);border:1px solid var(--color-warning-200);color:#93370D;font-size:14px;line-height:22px;text-align:left}
 #lf-dp .irs-aviso a{color:inherit;text-decoration:underline}
 #lf-dp .irs-grp{display:grid;grid-template-columns:260px 1fr;gap:12px;align-items:center;margin:0 0 8px}
@@ -46,16 +47,9 @@
 #lf-dp .irs-ra{margin:16px 0 0}
 #lf-dp .irs-fontes{margin:16px 0 0;padding-left:18px;font-size:13px;line-height:22px;color:#4F5969;list-style:disc;text-align:left}
 @media (max-width:767px){
-  #lf-dp .irs-form{grid-template-columns:1fr;gap:4px}
-  #lf-dp .irs-ou{height:auto;position:relative;margin:10px 0 2px}
-  #lf-dp .irs-ou::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px solid var(--border-primary)}
-  #lf-dp .irs-ou span{position:relative;width:40px;height:40px;box-shadow:0 0 0 6px var(--bg-white)}
-  #lf-dp .irs-form2{grid-template-columns:1fr;gap:16px}
-  #lf-dp .irs-check{grid-column:auto;min-height:0}
-  #lf-dp .irs-card{padding:20px;border-width:3px}
   #lf-dp .irs-h2{font-size:24px}
+  #lf-dp .irs-row.is-hl span:last-child{font-size:18px}
   #lf-dp .irs-box{padding:4px 14px}
-  #lf-dp .irs-row.is-hl span:last-child{font-size:19px}
   #lf-dp .irs-grp{grid-template-columns:1fr;gap:6px;margin-bottom:12px}
   #lf-dp .irs-tabs .dp-tab{font-size:13px;padding:10px 4px}
   #lf-dp .irs-sec{margin-top:36px}

@@ -240,14 +240,15 @@
     var resumo = a.isento
       ? 'Com <strong>' + eurInt(a.bruto) + '</strong> brutos por ano ficas dentro do mínimo de existência (' + eurInt(MIN_EXIST) + '): <strong>não pagas IRS</strong>, mesmo que a conta pelos escalões dê imposto.'
       : 'Com <strong>' + eurInt(a.bruto) + '</strong> brutos por ano, o teu rendimento coletável é de <strong>' + eur(a.col) + '</strong> e ficas no <strong>' + (a.i + 1) + '.º escalão</strong>. A taxa de ' + pct(a.taxa, 1) + ' só se aplica à parte do rendimento que cai nesse escalão. No total, o imposto é de <strong>' + eur(a.coleta) + '</strong> antes das deduções à coleta (despesas de saúde, educação, habitação e dependentes), que baixam este valor.';
-    return '<div class="irs-res" id="irsRes">' +
+    return '<div class="all-results_wrapper" id="irsRes"><div class="table-results_padding"><div class="table-results_wrapper"><div class="w-layout-grid grid is-calculadora"><div class="grid-block irs-gb">' +
+      '<div class="text-weight-medium"><div class="text-size-extra-large"><div>Resultados</div></div></div><div class="spacer-2 spacer-mobile-1"></div>' +
       '<p class="irs-res-t">Retenção na fonte (por mês)</p>' +
       row('IRS retido por mês', eur(r.valor), true) +
       row('Tabela que se aplica', 'Tabela ' + r.k, false, t.t.replace(' — ', ', ').toLowerCase().replace(/^./, function (c) { return c.toUpperCase(); })) +
       row('Linha da tabela', faixa(t, r.i)) +
       row('Taxa efetiva de retenção', pct(r.efetiva, 1)) +
       '<p class="irs-resumo"><strong>A conta:</strong> ' + conta + '</p>' +
-      '<p class="irs-res-t">Escalão de IRS (por ano)</p>' +
+      '<div class="spacer-2"></div><p class="irs-res-t">Escalão de IRS (por ano)</p>' +
       row('Escalão de IRS', a.isento ? 'Sem IRS a pagar' : (a.i + 1) + '.º escalão', true) +
       row('Taxa do escalão (marginal)', pct(a.taxa, 1)) +
       row('Rendimento bruto anual', eur(a.bruto), false, '14 meses de ' + oque) +
@@ -256,12 +257,15 @@
       row('IRS antes das deduções à coleta', eur(a.isento ? 0 : a.coleta)) +
       row('Taxa média sobre o rendimento coletável', pct(a.isento ? 0 : a.media, 2)) +
       '<p class="irs-resumo">' + resumo + '</p>' +
-      '<p class="dp-foot">A retenção segue a fórmula do Despacho n.º 233-A/2026 para residentes no continente e pode diferir em cêntimos do teu recibo. O escalão anual é calculado para um titular, só com este rendimento e sem tributação conjunta' + (x.def ? ', e não conta com os benefícios fiscais das pessoas com deficiência no IRS anual' : '') + '. A dedução específica é o maior valor entre ' + eur(DED_ESP) + ' (8,54 × IAS) e os descontos para a Segurança Social. Não é aconselhamento fiscal.</p></div>';
+      '<div class="irs-disc">A retenção segue a fórmula do Despacho n.º 233-A/2026 para residentes no continente e pode diferir em cêntimos do teu recibo. O escalão anual é calculado para um titular, só com este rendimento e sem tributação conjunta' + (x.def ? ', e não conta com os benefícios fiscais das pessoas com deficiência no IRS anual' : '') + '. A dedução específica é o maior valor entre ' + eur(DED_ESP) + ' (8,54 × IAS) e os descontos para a Segurança Social. Os resultados são simulações indicativas e não representam aconselhamento fiscal.</div>' +
+      '</div></div></div></div></div>';
   }
 
   function render() {
     var root = document.getElementById('lf-dp');
     if (!root) return;
+    var SUF = '<div class="input-text-position"><div class="text-size-medium"><div class="text-color-placeholder"><div>€</div></div></div></div>';
+    var campo = function (id, rot, ctl) { return '<div class="form_field-wrapper"><div class="form-label-info_wrapper"><label for="' + id + '" class="form_label">' + rot + '</label></div>' + ctl + '</div>'; };
     var op = function (v, sel, txt) { return '<option value="' + v + '"' + (String(sel) === String(v) ? ' selected' : '') + '>' + txt + '</option>'; };
     var tabs = GRUPOS.map(function (g) {
       return '<div class="irs-grp"><span class="irs-grp-l">' + g.l + '</span><div class="irs-tabs">' + g.k.map(function (k) {
@@ -282,17 +286,19 @@
       '<span class="dp-author dp-author-date"><span class="dp-author-ico">' + ico(CAL) + '</span><span><span class="dp-author-l">Última verificação</span><span class="dp-author-n">' + VERIFICADO + '</span></span></span>' +
       '</div></div>' +
 
-      '<div class="irs-card"><p class="irs-card-t">Quanto IRS te retêm e em que escalão estás?</p><p class="irs-card-s">Preenche só um dos valores. O outro é calculado por nós, a contar com 14 meses por ano.</p>' +
-      '<div class="irs-form">' +
-      '<div><label class="dp-label" for="irsMes">Valor bruto por mês</label><div class="dp-input-wrap"><input id="irsMes" class="dp-input" type="text" inputmode="numeric" autocomplete="off" value="' + milhar(String(Math.round(S.mes))) + '"><span class="dp-input-unit">€</span></div></div>' +
+      '<div class="calculadora-content_wrapper irs-calc"><div class="calculadora-form_wrapper"><div class="w-layout-grid grid is-calculadora"><div class="grid-block irs-gb" id="calc-inputs_wrapper">' +
+      '<div class="calculator-title_wrapper"><div class="text-size-medium"><div>Calculadora de retenção na fonte e escalão de IRS</div></div><div class="spacer-1"></div><div class="horizontal-line border-secondary"></div></div>' +
+      '<form class="form_form" id="calc-tabelas-irs" onsubmit="return false">' +
+      campo('irsMes', 'Valor bruto por mês', '<div class="input-text_wrapper"><input id="irsMes" class="form_input is-normal" type="text" inputmode="numeric" autocomplete="off" value="' + milhar(String(Math.round(S.mes))) + '">' + SUF + '</div>') +
       '<div class="irs-ou" aria-hidden="true"><span>ou</span></div>' +
-      '<div><label class="dp-label" for="irsBruto">Valor bruto por ano</label><div class="dp-input-wrap"><input id="irsBruto" class="dp-input" type="text" inputmode="numeric" autocomplete="off" value="' + milhar(String(Math.round(S.mes * 14))) + '"><span class="dp-input-unit">€</span></div></div>' +
-      '</div><div class="irs-form2">' +
-      '<div><label class="dp-label" for="irsTipo">Rendimento</label><select class="dp-input dp-input-select" id="irsTipo">' + op('A', S.tipo, 'Salário') + op('H', S.tipo, 'Pensão') + '</select></div>' +
-      '<div><label class="dp-label" for="irsSit">Situação</label><select class="dp-input dp-input-select" id="irsSit">' + op('nc', S.sit, 'Não casado') + op('c2', S.sit, 'Casado, dois titulares') + op('c1', S.sit, 'Casado, único titular') + '</select></div>' +
-      '<div><label class="dp-label" for="irsDep">Dependentes</label><select class="dp-input dp-input-select" id="irsDep">' + [0, 1, 2, 3, 4, 5, 6].map(function (d) { return op(d, S.dep, d === 0 ? 'Nenhum' : String(d)); }).join('') + '</select></div>' +
+      campo('irsBruto', 'Valor bruto por ano (14 meses)', '<div class="input-text_wrapper"><input id="irsBruto" class="form_input is-normal" type="text" inputmode="numeric" autocomplete="off" value="' + milhar(String(Math.round(S.mes * 14))) + '">' + SUF + '</div>') +
+      '<p class="irs-hint">Preenche só um dos dois valores. O outro é calculado por nós.</p><div class="spacer-1-5"></div>' +
+      campo('irsTipo', 'Rendimento', '<select class="form_input is-normal irs-select" id="irsTipo">' + op('A', S.tipo, 'Salário') + op('H', S.tipo, 'Pensão') + '</select>') + '<div class="spacer-1-5"></div>' +
+      campo('irsSit', 'Situação', '<select class="form_input is-normal irs-select" id="irsSit">' + op('nc', S.sit, 'Não casado') + op('c2', S.sit, 'Casado, dois titulares') + op('c1', S.sit, 'Casado, único titular') + '</select>') + '<div class="spacer-1-5"></div>' +
+      campo('irsDep', 'Dependentes', '<select class="form_input is-normal irs-select" id="irsDep">' + [0, 1, 2, 3, 4, 5, 6].map(function (d) { return op(d, S.dep, d === 0 ? 'Nenhum' : String(d)); }).join('') + '</select>') + '<div class="spacer-1-5"></div>' +
       '<label class="irs-check"><input type="checkbox" id="irsDef"' + (S.def ? ' checked' : '') + '><span>Tenho deficiência (incapacidade de 60% ou mais)</span></label>' +
-      '<button type="button" class="dp-btn" id="irsCalc">Calcular</button></div>' + resultado() + '</div>' +
+      '<div class="spacer-2"></div><a id="calcular" href="#" class="button is-form-submit w-button">Calcular</a>' +
+      '</form></div></div></div>' + resultado() + '</div>' +
 
       '<div class="irs-sec"><h2 class="irs-h2">Tabelas de retenção na fonte de IRS 2026</h2>' +
       '<p class="irs-p">A retenção na fonte é o IRS que a entidade patronal ou a Segurança Social desconta todos os meses no teu salário ou pensão, por conta do imposto final. As tabelas de 2026 para o continente estão no <a href="' + L.desp + '" target="_blank" rel="noopener">Despacho n.º 233-A/2026, de 6 de janeiro</a>, e aplicam-se desde 1 de janeiro. São 11: três para trabalho dependente, quatro para trabalhadores com deficiência e quatro para pensões.</p>' +
@@ -321,7 +327,8 @@
     if (!t.closest || !t.closest('#lf-dp')) return;
     var tab = t.closest('[data-tab]');
     if (tab) { lerForm(); S.tab = tab.getAttribute('data-tab'); render(); return; }
-    if (t.closest('#irsCalc')) {
+    if (t.closest('#calcular')) {
+      e.preventDefault();
       lerForm();
       S.res = calcular(S.mes, S.tipo, S.sit, S.dep, S.def);
       S.tab = S.res.ret.k;
@@ -339,7 +346,7 @@
     if (outro) outro.value = isNaN(v) ? '' : milhar(String(id === 'irsBruto' ? Math.round(v / 14) : v * 14));
   });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' && e.target && (e.target.id === 'irsBruto' || e.target.id === 'irsMes')) { var b = document.getElementById('irsCalc'); if (b) b.click(); }
+    if (e.key === 'Enter' && e.target && (e.target.id === 'irsBruto' || e.target.id === 'irsMes')) { var b = document.getElementById('calcular'); if (b) b.click(); }
   });
 
   function montar() {
