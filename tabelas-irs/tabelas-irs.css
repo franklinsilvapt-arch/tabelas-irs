@@ -1,0 +1,62 @@
+/* Tabelas de IRS: suplemento ao CSS do comparador de depositos (#lf-dp .dp-*). */
+#lf-dp .irs-sec{margin-top:48px}
+#lf-dp .irs-h2{font-size:28px;font-weight:300;line-height:1.35;letter-spacing:-.16px;color:var(--text-primary);margin:0 0 10px;text-align:left}
+#lf-dp .irs-p{font-size:15px;line-height:24px;color:var(--text-secondary);margin:0 0 16px;max-width:820px;text-align:left}
+#lf-dp .irs-p a,#lf-dp .irs-fontes a,#lf-dp .dp-foot a{color:var(--color-blue-600);text-decoration:underline;text-underline-offset:2px}
+#lf-dp .irs-box{background:var(--bg-white);border:1px solid var(--border-secondary);border-radius:var(--radius-2xl);padding:8px 20px;overflow-x:auto}
+#lf-dp .irs-t{width:100%;border-collapse:collapse;font-size:14px;line-height:20px;min-width:560px}
+#lf-dp .irs-t th{text-align:left;font-size:12px;font-weight:500;color:#697386;padding:10px 8px 10px 0;border-bottom:1px solid var(--border-secondary);white-space:nowrap}
+#lf-dp .irs-t td{padding:10px 8px 10px 0;border-bottom:1px solid var(--border-secondary);color:var(--text-primary);white-space:nowrap}
+#lf-dp .irs-t tr:last-child td{border-bottom:0}
+#lf-dp .irs-t th.num,#lf-dp .irs-t td.num{text-align:right;padding-right:0;padding-left:8px}
+#lf-dp .irs-t td:first-child{color:#4F5969;font-weight:500}
+#lf-dp .irs-t tr.is-on td{background:var(--color-brand-50);font-weight:600;color:var(--color-brand-700)}
+#lf-dp .irs-t tr.is-on td:first-child{box-shadow:inset 3px 0 0 var(--color-brand-600);padding-left:10px}
+#lf-dp .irs-t tr.is-on td:last-child{padding-right:10px}
+#lf-dp .irs-tu{display:inline-block;margin-left:8px;padding:1px 8px;border-radius:var(--radius-full);background:var(--color-brand-600);color:#fff;font-size:11px;font-weight:600;line-height:16px;vertical-align:1px}
+#lf-dp .irs-card{background:var(--bg-white);border:4px solid var(--border-tertiary);border-radius:var(--radius-3xl);padding:28px 32px;text-align:left}
+#lf-dp .irs-card-t{font-size:18px;font-weight:500;line-height:28px;color:var(--text-primary);margin:0 0 4px}
+#lf-dp .irs-card-s{font-size:14px;line-height:20px;color:var(--text-quaternary);margin:0 0 20px}
+#lf-dp .irs-form{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:end}
+#lf-dp .irs-ou{display:flex;align-items:center;justify-content:center;height:46px}
+#lf-dp .irs-ou span{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:#3A4454;color:#fff;font-size:14px;font-weight:600;letter-spacing:.2px;text-transform:uppercase}
+#lf-dp .irs-form2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;align-items:end;margin-top:20px}
+#lf-dp .irs-check{grid-column:1 / 3;display:flex;align-items:center;gap:10px;font-size:14px;line-height:20px;color:var(--text-secondary);cursor:pointer;min-height:46px}
+#lf-dp .irs-check input{width:18px;height:18px;margin:0;accent-color:#3A4454;flex-shrink:0}
+#lf-dp .irs-form2 .dp-btn{height:46px}
+#lf-dp .irs-res{margin-top:24px;border-top:1px solid var(--border-secondary)}
+#lf-dp .irs-res-t{font-size:12px;font-weight:600;line-height:18px;letter-spacing:.4px;text-transform:uppercase;color:#697386;margin:24px 0 4px}
+#lf-dp .irs-row{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:12px 0;border-bottom:1px dotted var(--border-secondary);font-size:14px;line-height:20px}
+#lf-dp .irs-row span:first-child{color:#4F5969}
+#lf-dp .irs-row small{display:block;font-size:12px;line-height:18px;color:var(--text-quaternary)}
+#lf-dp .irs-row span:last-child{font-weight:600;color:var(--text-primary);text-align:right}
+#lf-dp .irs-row.is-hl span:first-child{font-size:16px;font-weight:600;color:var(--text-primary)}
+#lf-dp .irs-row.is-hl span:last-child{font-size:22px;font-weight:700;color:var(--color-brand-700)}
+#lf-dp .irs-resumo{font-size:14px;line-height:1.65;color:var(--text-secondary);margin:14px 0 0}
+#lf-dp .irs-resumo strong{color:var(--text-primary)}
+#lf-dp .irs-aviso{display:flex;gap:10px;margin:16px 0 0;padding:12px 14px;border-radius:var(--radius-xl);background:var(--color-warning-50);border:1px solid var(--color-warning-200);color:#93370D;font-size:14px;line-height:22px;text-align:left}
+#lf-dp .irs-aviso a{color:inherit;text-decoration:underline}
+#lf-dp .irs-grp{display:grid;grid-template-columns:260px 1fr;gap:12px;align-items:center;margin:0 0 8px}
+#lf-dp .irs-grp-l{font-size:13px;font-weight:500;line-height:18px;color:#4F5969;text-align:left}
+#lf-dp .irs-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+#lf-dp .irs-tabs .dp-tab{border:1px solid var(--border-primary);background:var(--bg-white);border-radius:var(--radius-xl);padding:10px 8px;font-size:14px;font-weight:500;line-height:20px;color:#3A4454;text-align:center}
+#lf-dp .irs-tabs .dp-tab:hover{border-color:var(--border-hover)}
+#lf-dp .irs-tabs .dp-tab.is-active{background:#3A4454;border-color:#3A4454;color:#F9FAFB}
+#lf-dp .irs-tab-t{margin:16px 0 12px}
+#lf-dp .irs-ra{margin:16px 0 0}
+#lf-dp .irs-fontes{margin:16px 0 0;padding-left:18px;font-size:13px;line-height:22px;color:#4F5969;list-style:disc;text-align:left}
+@media (max-width:767px){
+  #lf-dp .irs-form{grid-template-columns:1fr;gap:4px}
+  #lf-dp .irs-ou{height:auto;position:relative;margin:10px 0 2px}
+  #lf-dp .irs-ou::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px solid var(--border-primary)}
+  #lf-dp .irs-ou span{position:relative;width:40px;height:40px;box-shadow:0 0 0 6px var(--bg-white)}
+  #lf-dp .irs-form2{grid-template-columns:1fr;gap:16px}
+  #lf-dp .irs-check{grid-column:auto;min-height:0}
+  #lf-dp .irs-card{padding:20px;border-width:3px}
+  #lf-dp .irs-h2{font-size:24px}
+  #lf-dp .irs-box{padding:4px 14px}
+  #lf-dp .irs-row.is-hl span:last-child{font-size:19px}
+  #lf-dp .irs-grp{grid-template-columns:1fr;gap:6px;margin-bottom:12px}
+  #lf-dp .irs-tabs .dp-tab{font-size:13px;padding:10px 4px}
+  #lf-dp .irs-sec{margin-top:36px}
+}
