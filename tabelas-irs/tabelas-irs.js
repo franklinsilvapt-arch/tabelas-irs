@@ -9,6 +9,9 @@
 
   var VERIFICADO = '30 de setembro de 2026';
   var IAS = 537.13, DED_ESP = 8.54 * IAS, MIN_EXIST = 12880;
+  /* Valores por omissao. Sao substituidos pelos de data/irs.json, que o atualizar_irs.py mantem a partir do Diario da Republica e do Portal das Financas. */
+  var DESP = { nome: 'Despacho n.º 233-A/2026', data: '6 de janeiro', inicio: '1 de janeiro de 2026', url: null };
+  var REDACAO = 'Lei n.º 73-A/2025, de 30/12', REDACAO0 = REDACAO, ANO = '2026';
   /* [limite superior do rendimento coletavel, taxa, parcela a abater] */
   var ESC = [
     [8342, 12.5, 0], [12587, 15.7, 266.94], [17838, 21.2, 959.23], [23089, 24.1, 1476.53], [29397, 31.1, 3092.76],
@@ -194,6 +197,11 @@
     var coleta = Math.max(0, col * ESC[i][1] / 100 - ESC[i][2]);
     return { bruto: bruto, ded: ded, col: col, i: i, taxa: ESC[i][1], coleta: coleta, media: col > 0 ? coleta / col * 100 : 0, isento: bruto <= MIN_EXIST };
   }
+  function exemplo() {
+    var x = retencao(1500, 'A', 'nc', 0, false);
+    if (x.k !== 'I' || x.formula) return '';
+    return 'Exemplo na Tabela I, com 1.500€ e sem dependentes: 1.500€ × ' + pct(x.taxa, 2) + ' − ' + eur(x.parcela) + ' = ' + eur(x.valor) + '.';
+  }
   function calcular(mes, tipo, sit, dep, def) {
     tipo = tipo || 'A'; sit = sit || 'nc'; dep = dep || 0;
     return { mes: mes, tipo: tipo, sit: sit, dep: dep, def: !!def, ret: retencao(mes, tipo, sit, dep, !!def), an: anual(mes * 14, tipo) };
@@ -257,7 +265,7 @@
       row('IRS antes das deduções à coleta', eur(a.isento ? 0 : a.coleta)) +
       row('Taxa média sobre o rendimento coletável', pct(a.isento ? 0 : a.media, 2)) +
       '<p class="irs-resumo">' + resumo + '</p>' +
-      '<div class="irs-disc">A retenção segue a fórmula do Despacho n.º 233-A/2026 para residentes no continente e pode diferir em cêntimos do teu recibo. O escalão anual é calculado para um titular, só com este rendimento e sem tributação conjunta' + (x.def ? ', e não conta com os benefícios fiscais das pessoas com deficiência no IRS anual' : '') + '. A dedução específica é o maior valor entre ' + eur(DED_ESP) + ' (8,54 × IAS) e os descontos para a Segurança Social. Os resultados são simulações indicativas e não representam aconselhamento fiscal.</div>' +
+      '<div class="irs-disc">A retenção segue a fórmula do ' + DESP.nome + ' para residentes no continente e pode diferir em cêntimos do teu recibo. O escalão anual é calculado para um titular, só com este rendimento e sem tributação conjunta' + (x.def ? ', e não conta com os benefícios fiscais das pessoas com deficiência no IRS anual' : '') + '. A dedução específica é o maior valor entre ' + eur(DED_ESP) + ' (8,54 × IAS) e os descontos para a Segurança Social. Os resultados são simulações indicativas e não representam aconselhamento fiscal.</div>' +
       '</div></div></div></div></div>';
   }
 
@@ -275,11 +283,12 @@
     var atual = tabela(S.tab), temDep = ['I', 'II', 'III', 'V', 'VI', 'VII'].indexOf(S.tab) > -1, pens = atual.tipo === 'H', fa = S.tab === 'X' || S.tab === 'XI';
     var formula = 'Retenção = R × taxa marginal máxima − parcela a abater' + (temDep ? ' − (parcela por dependente × número de dependentes)' : '') + ', em que R é ' + (pens ? 'a pensão mensal bruta' : 'a remuneração mensal bruta') + '. ';
     var nota = pens
-      ? 'Nas pensões, por cada dependente a cargo soma-se à parcela a abater 42,86€ (casado, único titular), 21,43€ (casado, dois titulares) ou 34,29€ (não casado).' + (fa ? ' Os deficientes das Forças Armadas têm ainda a parcela adicional da tabela.' : '')
+      ? (DESP.nome === 'Despacho n.º 233-A/2026' ? 'Nas pensões, por cada dependente a cargo soma-se à parcela a abater 42,86€ (casado, único titular), 21,43€ (casado, dois titulares) ou 34,29€ (não casado).' : 'Nas pensões, a parcela a abater aumenta por cada dependente a cargo, nos valores do despacho.') + (fa ? ' Os deficientes das Forças Armadas têm ainda a parcela adicional da tabela.' : '')
       : (temDep ? 'Com três ou mais dependentes, a taxa marginal máxima baixa um ponto percentual. ' : '') + 'A taxa efetiva no limite é a retenção a dividir pela remuneração no topo de cada linha, sem dependentes.';
 
+    var mudou = REDACAO !== REDACAO0;
     root.innerHTML =
-      '<div class="max-width-37-5 dp-lead"><div class="text-color-secondary"><div class="text-size-large"><div class="text-align-center">As 11 tabelas de retenção na fonte e os escalões de IRS em vigor em 2026, com os valores oficiais. Indica o teu salário ou pensão e vê quanto te retêm por mês e em que escalão ficas.</div></div></div></div>' +
+      '<div class="max-width-37-5 dp-lead"><div class="text-color-secondary"><div class="text-size-large"><div class="text-align-center">As 11 tabelas de retenção na fonte e os escalões de IRS em vigor em ' + ANO + ', com os valores oficiais. Indica o teu salário ou pensão e vê quanto te retêm por mês e em que escalão ficas.</div></div></div></div>' +
       '<div class="dp-meta"><div class="dp-authors">' +
       '<a class="dp-author" href="https://www.literaciafinanceira.pt/autores/franklin-silva"><img class="dp-author-img" src="https://cdn.prod.website-files.com/67922c46c9da6bf5d9bfdf20/683ee0ae5bc67fe0ef48466e_franklin-silva.avif" alt="Franklin Silva"><span><span class="dp-author-l">Autor</span><span class="dp-author-n">Franklin Silva</span></span></a>' +
       '<a class="dp-author" href="https://www.literaciafinanceira.pt/autores/pedro-braz"><img class="dp-author-img" src="https://cdn.prod.website-files.com/67922c46c9da6bf5d9bfdf20/683ee0f9b80a20ec1767fab5_Pedro-Braz.avif" alt="Pedro Braz"><span><span class="dp-author-l">Revisor</span><span class="dp-author-n">Pedro Braz</span></span></a>' +
@@ -300,19 +309,19 @@
       '<div class="spacer-2"></div><a id="calcular" href="#" class="button is-form-submit w-button">Calcular</a>' +
       '</form></div></div></div>' + resultado() + '</div>' +
 
-      '<div class="irs-sec"><h2 class="irs-h2">Tabelas de retenção na fonte de IRS 2026</h2>' +
-      '<p class="irs-p">A retenção na fonte é o IRS que a entidade patronal ou a Segurança Social desconta todos os meses no teu salário ou pensão, por conta do imposto final. As tabelas de 2026 para o continente estão no <a href="' + L.desp + '" target="_blank" rel="noopener">Despacho n.º 233-A/2026, de 6 de janeiro</a>, e aplicam-se desde 1 de janeiro. São 11: três para trabalho dependente, quatro para trabalhadores com deficiência e quatro para pensões.</p>' +
+      '<div class="irs-sec"><h2 class="irs-h2">Tabelas de retenção na fonte de IRS ' + ANO + '</h2>' +
+      '<p class="irs-p">A retenção na fonte é o IRS que a entidade patronal ou a Segurança Social desconta todos os meses no teu salário ou pensão, por conta do imposto final. As tabelas de ' + ANO + ' para o continente estão no <a href="' + (DESP.url || L.desp) + '" target="_blank" rel="noopener">' + DESP.nome + ', de ' + DESP.data + '</a>, e aplicam-se desde ' + DESP.inicio.replace(/ de \d{4}$/, '') + '. São 11: três para trabalho dependente, quatro para trabalhadores com deficiência e quatro para pensões.</p>' +
       tabs + '<p class="irs-p irs-tab-t"><strong>Tabela ' + atual.k + ':</strong> ' + (pens ? 'pensões, ' : 'trabalho dependente, ') + atual.t.replace(' — ', ', ').toLowerCase() + '.</p>' +
       tabRetencao() +
-      '<p class="dp-foot">' + formula + nota + ' Exemplo na Tabela I, com 1.500€ e sem dependentes: 1.500€ × 24,10% − 193,33€ = 168,17€. Para o valor exato do teu salário líquido, usa o <a href="' + L.sal + '">simulador de salário líquido</a>.</p>' +
+      '<p class="dp-foot">' + formula + nota + ' ' + exemplo() + ' Para o valor exato do teu salário líquido, usa o <a href="' + L.sal + '">simulador de salário líquido</a>.</p>' +
       '<p class="irs-p irs-ra"><strong>Açores e Madeira:</strong> as regiões autónomas têm tabelas próprias, com retenções mais baixas. Estão no <a href="' + L.acores + '" target="_blank" rel="noopener">Despacho n.º 1179/2026</a> (Açores) e no <a href="' + L.madeira + '" target="_blank" rel="noopener">Despacho n.º 19/2026 da Secretaria Regional das Finanças</a> (Madeira).</p></div>' +
 
-      '<div class="irs-sec"><h2 class="irs-h2">Escalões de IRS 2026</h2>' +
-      '<p class="irs-p">Os escalões aplicam-se ao rendimento coletável de 2026, que declaras em 2027. Foram fixados pelo <a href="' + L.lei + '" target="_blank" rel="noopener">Orçamento do Estado para 2026 (Lei n.º 73-A/2025)</a>, que alterou o <a href="' + L.art68 + '" target="_blank" rel="noopener">artigo 68.º do Código do IRS</a>: os limites subiram 3,51% e as taxas do 2.º ao 5.º escalão desceram 0,3 pontos percentuais.</p>' +
+      '<div class="irs-sec"><h2 class="irs-h2">Escalões de IRS ' + ANO + '</h2>' +
+      (mudou ? '<p class="irs-p">Os escalões aplicam-se ao rendimento coletável de ' + ANO + '. São os do <a href="' + L.art68 + '" target="_blank" rel="noopener">artigo 68.º do Código do IRS</a>, na redação da ' + REDACAO + '.</p>' : '<p class="irs-p">Os escalões aplicam-se ao rendimento coletável de 2026, que declaras em 2027. Foram fixados pelo <a href="' + L.lei + '" target="_blank" rel="noopener">Orçamento do Estado para 2026 (Lei n.º 73-A/2025)</a>, que alterou o <a href="' + L.art68 + '" target="_blank" rel="noopener">artigo 68.º do Código do IRS</a>: os limites subiram 3,51% e as taxas do 2.º ao 5.º escalão desceram 0,3 pontos percentuais.</p>') +
       tabEscaloes(S.res && !S.res.an.isento ? S.res.an.i : -1) +
       '<p class="dp-foot">IRS = rendimento coletável × taxa do escalão − parcela a abater. A parcela a abater é calculada por nós a partir das taxas da lei e dá o mesmo resultado que aplicar cada taxa à sua fatia de rendimento. Rendimentos coletáveis acima de 80.000€ pagam ainda a taxa adicional de solidariedade (2,5% até 250.000€ e 5% acima).</p>' +
-      '<div class="irs-aviso"><div><strong>Pode mudar ainda em 2026:</strong> o Governo entregou no Parlamento, a 21 de setembro de 2026, uma proposta para baixar as taxas do 1.º ao 6.º escalão (para 12,2%, 15,2%, 20,7%, 23,6%, 30,6% e 34,6%), com efeitos em todo o ano de 2026 e novas tabelas de retenção a partir de novembro. À data da última verificação ainda não era lei. <a href="' + L.prop + '" target="_blank" rel="noopener">Fonte: ECO</a>.</div></div>' +
-      '<ul class="irs-fontes"><li><a href="' + L.desp + '" target="_blank" rel="noopener">Despacho n.º 233-A/2026, de 6 de janeiro</a>: tabelas de retenção na fonte do continente.</li><li><a href="' + L.circ + '" target="_blank" rel="noopener">Circular n.º 1/2026 da Autoridade Tributária</a>: instruções de aplicação das tabelas.</li><li><a href="' + L.lei + '" target="_blank" rel="noopener">Lei n.º 73-A/2025, de 30 de dezembro</a> (Orçamento do Estado para 2026): escalões de IRS.</li></ul></div>';
+      (mudou ? '' : '<div class="irs-aviso"><div><strong>Pode mudar ainda em 2026:</strong> o Governo entregou no Parlamento, a 21 de setembro de 2026, uma proposta para baixar as taxas do 1.º ao 6.º escalão (para 12,2%, 15,2%, 20,7%, 23,6%, 30,6% e 34,6%), com efeitos em todo o ano de 2026 e novas tabelas de retenção a partir de novembro. À data da última verificação ainda não era lei. <a href="' + L.prop + '" target="_blank" rel="noopener">Fonte: ECO</a>.</div></div>') +
+      '<ul class="irs-fontes"><li><a href="' + (DESP.url || L.desp) + '" target="_blank" rel="noopener">' + DESP.nome + ', de ' + DESP.data + '</a>: tabelas de retenção na fonte do continente.</li><li><a href="' + L.circ + '" target="_blank" rel="noopener">Circular n.º 1/2026 da Autoridade Tributária</a>: instruções de aplicação das tabelas.</li>' + (mudou ? '<li><a href="' + L.art68 + '" target="_blank" rel="noopener">Artigo 68.º do Código do IRS</a> (' + REDACAO + '): escalões de IRS.</li>' : '<li><a href="' + L.lei + '" target="_blank" rel="noopener">Lei n.º 73-A/2025, de 30 de dezembro</a> (Orçamento do Estado para 2026): escalões de IRS.</li>') + '</ul></div>';
   }
 
   function num(id) { var el = document.getElementById(id); return el ? parseInt(String(el.value).replace(/\D/g, ''), 10) || 0 : 0; }
@@ -356,7 +365,37 @@
       if (h1 && h1.parentNode) h1.parentNode.appendChild(div); else return;
     }
     render();
+    carregar();
   }
+  var MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  function aplicar(d) {
+    if (!d || !d.retencao || !d.retencao.tabelas || d.retencao.tabelas.length !== 11 || !d.escaloes || d.escaloes.linhas.length < 5) return false;
+    var e = [], m = [], parc = 0, ant = 0, antTaxa = 0;
+    d.escaloes.linhas.forEach(function (l, i) {
+      if (i) parc += ant * (l[1] - antTaxa) / 100;
+      e.push([l[0] === null ? Infinity : l[0], l[1], Math.round(parc * 100) / 100]);
+      m.push(l[2] ? l[2] + '%' : '–');
+      ant = l[0]; antTaxa = l[1];
+    });
+    ESC = e; MEDIA = m; RET = d.retencao.tabelas;
+    if (d.ias) { IAS = d.ias; DED_ESP = 8.54 * IAS; }
+    if (d.min_existencia) MIN_EXIST = d.min_existencia;
+    if (d.escaloes.redacao) REDACAO = d.escaloes.redacao;
+    DESP = { nome: d.retencao.despacho, data: d.retencao.data_txt, inicio: d.retencao.inicio, url: d.retencao.pdf };
+    var a = /(\d{4})$/.exec(d.retencao.inicio || ''); if (a) ANO = a[1];
+    var v = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d.verificado || '');
+    if (v) VERIFICADO = parseInt(v[3], 10) + ' de ' + MESES[parseInt(v[2], 10) - 1] + ' de ' + v[1];
+    return true;
+  }
+  function carregar() {
+    var sc = document.querySelector('script[src*="tabelas-irs.js"]'), url = window.__lfIrsDados;
+    if (!url && sc) url = sc.src.replace(/tabelas-irs\.js.*$/, 'data/irs.json');
+    if (!url || !window.fetch) return;
+    fetch(url + '?d=' + new Date().toISOString().slice(0, 10)).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (aplicar(d)) { if (S.res) S.res = calcular(S.mes, S.tipo, S.sit, S.dep, S.def); render(); }
+    }).catch(function () {});
+  }
+  window.__lfIrsAplicar = aplicar;
   window.__lfIrsCalc = calcular;
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', montar); else montar();
 })();
