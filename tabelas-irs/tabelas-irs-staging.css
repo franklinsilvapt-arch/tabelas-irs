@@ -49,10 +49,11 @@
 #lf-dp .irs-ra{margin:16px 0 0}
 #lf-dp .irs-fontes{margin:16px 0 0;padding-left:18px;font-size:13px;line-height:22px;color:#4F5969;list-style:disc;text-align:left}
 @media (max-width:767px){
-  #lf-dp .irs-h2{font-size:24px}
   #lf-dp .irs-row.is-hl span:last-child{font-size:18px}
   #lf-dp .irs-box{padding:4px 14px 4px 0}
   #lf-dp .irs-t th:first-child,#lf-dp .irs-t td:first-child{position:sticky;left:0;z-index:1;background:var(--bg-white);padding-left:14px;box-shadow:1px 0 0 var(--border-secondary)}
+  #lf-dp .irs-t td:first-child{white-space:normal;min-width:96px;max-width:124px}
+  #lf-dp .irs-t td:first-child .irs-tu{display:table;margin:4px 0 0}
   #lf-dp .irs-t tr.is-on td:first-child{background:var(--color-brand-50);padding-left:14px;box-shadow:inset 3px 0 0 var(--color-brand-600),1px 0 0 var(--border-secondary)}
   #lf-dp .irs-grp{grid-template-columns:1fr;gap:6px;margin-bottom:12px}
   #lf-dp .irs-tabs .dp-tab{font-size:13px;padding:10px 4px}
