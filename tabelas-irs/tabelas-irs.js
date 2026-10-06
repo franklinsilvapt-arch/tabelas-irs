@@ -627,6 +627,27 @@
     if (S.res) S.res = calcular(S.res.mes, S.res.tipo, S.res.sit, S.res.dep, S.res.def, reg);
     render();
   }
+  // Altura do menu fixo/sticky no topo, para o scroll nao deixar o cartao tapado.
+  function alturaMenu() {
+    var h = 0, xs = [8, window.innerWidth / 2, window.innerWidth - 8];
+    for (var i = 0; i < xs.length; i++) {
+      var n = document.elementFromPoint(xs[i], 2);
+      while (n && n !== document.body && n !== document.documentElement) {
+        var pos = getComputedStyle(n).position;
+        if (pos === 'fixed' || pos === 'sticky') {
+          var b = n.getBoundingClientRect();
+          if (b.top <= 2 && b.bottom > h && b.height < window.innerHeight / 2) h = b.bottom;
+          break;
+        }
+        n = n.parentElement;
+      }
+    }
+    return h;
+  }
+  function rolarPara(el) {
+    var y = el.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop) - alturaMenu() - 24;
+    try { window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' }); } catch (err) { window.scrollTo(0, Math.max(0, y)); }
+  }
   document.addEventListener('click', function (e) {
     var t = e.target;
     if (!t.closest || !t.closest('#lf-dp')) return;
@@ -641,7 +662,7 @@
       S.tab = S.res.ret.k;
       render();
       var r = document.getElementById('irsRes');
-      if (r && r.scrollIntoView) r.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (r) rolarPara(r);
     }
   });
   document.addEventListener('change', function (e) {
