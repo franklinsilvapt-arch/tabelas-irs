@@ -645,7 +645,13 @@
     return h;
   }
   function rolarPara(el) {
-    var y = el.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop) - alturaMenu() - 24;
+    var off = alturaMenu() + 24;
+    // O site usa Lenis: o scroll tem de passar por ele, senao o Lenis desfaz o scrollTo nativo.
+    if (window.lenis && typeof window.lenis.scrollTo === 'function') {
+      window.lenis.scrollTo(el, { offset: -off, duration: 1 });
+      return;
+    }
+    var y = el.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop) - off;
     try { window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' }); } catch (err) { window.scrollTo(0, Math.max(0, y)); }
   }
   document.addEventListener('click', function (e) {
