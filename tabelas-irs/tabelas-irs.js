@@ -475,7 +475,7 @@
 
   /* Escolha da regiao: os mesmos botoes das tabelas, numa linha propria */
   function botoesRegiao() {
-    return '<div class="irs-grp" style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border-secondary)"><span class="irs-grp-l">Região</span><div class="irs-tabs">' + ORDEM.map(function (r) {
+    return '<div class="irs-grp" style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border-secondary)"><span class="irs-grp-l">Região</span><div class="irs-tabs is-3">' + ORDEM.map(function (r) {
       return '<button type="button" class="dp-tab' + (S.reg === r ? ' is-active' : '') + '" data-reg="' + r + '">' + REG[r].n + '</button>';
     }).join('') + '</div></div>';
   }
@@ -522,7 +522,7 @@
       row('Linha da tabela', faixa(t, r.i)) +
       row('Taxa efetiva de retenção', pct(r.efetiva, 1)) +
       '<p class="irs-resumo"><strong>A conta:</strong> ' + conta + '</p>' +
-      '<div class="spacer-2"></div><p class="irs-res-t">Escalão de IRS (por ano)</p>' +
+      '<p class="irs-res-t is-sep">Escalão de IRS (por ano)</p>' +
       row('Escalão de IRS', a.isento ? 'Sem IRS a pagar' : (a.i + 1) + '.º escalão', true) +
       row('Taxa do escalão (marginal)', pct(a.taxa, casas(a.taxa))) +
       row('Rendimento bruto anual', eur(a.bruto), false, '14 meses de ' + oque) +
@@ -592,14 +592,14 @@
       '<div class="spacer-2"></div><a id="calcular" href="#" class="button is-form-submit w-button">Calcular</a>' +
       '</form></div></div></div>' + resultado() + '</div>' +
 
-      '<div class="irs-sec"><h2 class="irs-h2">Tabelas de retenção na fonte de IRS ' + ANO + '</h2>' +
+      '<div class="irs-sec"><h2 class="heading-style-h2 irs-h2">Tabelas de retenção na fonte de IRS ' + ANO + '</h2>' +
       '<p class="irs-p">A retenção na fonte é o IRS que a entidade patronal ou a Segurança Social desconta todos os meses no teu salário ou pensão, por conta do imposto final. O continente, os Açores e a Madeira têm tabelas diferentes: escolhe a tua região. As de ' + anoR + ' ' + REG[S.reg].para + ' estão no ' + ondeEsta + ', e aplicam-se desde ' + dR.inicio.replace(/ de \d{4}$/, '') + '. São 11 em cada região: três para trabalho dependente, quatro para trabalhadores com deficiência e quatro para pensões.</p>' +
       botoesRegiao() + tabs + '<p class="irs-p irs-tab-t"><strong>Tabela ' + atual.k + ' ' + REG[S.reg].de + ':</strong> ' + (pens ? 'pensões, ' : 'trabalho dependente, ') + atual.t.replace(' — ', ', ').toLowerCase() + '.</p>' +
       tabRetencao() +
       '<p class="dp-foot">' + formula + nota + ' ' + exemplo() + ' Para o valor exato do teu salário líquido, usa o <a href="' + L.sal + '">simulador de salário líquido</a>.</p>' +
       avisoReg + '</div>' +
 
-      '<div class="irs-sec"><h2 class="irs-h2">Escalões de IRS ' + ANO + '</h2>' +
+      '<div class="irs-sec"><h2 class="heading-style-h2 irs-h2">Escalões de IRS ' + ANO + '</h2>' +
       (mudou ? '<p class="irs-p">Os escalões aplicam-se ao rendimento coletável de ' + ANO + '. São os do <a href="' + L.art68 + '" target="_blank" rel="noopener">artigo 68.º do Código do IRS</a>, na redação da ' + REDACAO + '.</p>' : '<p class="irs-p">Os escalões aplicam-se ao rendimento coletável de 2026, que declaras em 2027. Foram fixados pelo <a href="' + L.lei + '" target="_blank" rel="noopener">Orçamento do Estado para 2026 (Lei n.º 73-A/2025)</a>, que alterou o <a href="' + L.art68 + '" target="_blank" rel="noopener">artigo 68.º do Código do IRS</a>: os limites subiram 3,51% e as taxas do 2.º ao 5.º escalão desceram 0,3 pontos percentuais.</p>') +
       botoesRegiao() + escReg +
       tabEscaloes(S.res && S.res.reg === S.reg && !S.res.an.isento ? S.res.an.i : -1) +
