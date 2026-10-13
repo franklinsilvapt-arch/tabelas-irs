@@ -380,7 +380,7 @@
     madeiraCirc: 'https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/legislacao/instrucoes_administrativas/Documents/Circular_2_2026.pdf',
     madeiraEsc: 'https://diariodarepublica.pt/dr/detalhe/decreto-legislativo-regional/8-2025-993031451',
     tabelasAT: 'https://info.portaldasfinancas.gov.pt/pt/apoio_contribuinte/tabela_ret_doclib/Pages/default.aspx',
-    prop: 'https://eco.sapo.pt/2026/09/21/governo-ja-entregou-proposta-para-reduzir-irs-no-parlamento/',
+    prop: 'https://hrportugal.sapo.pt/parlamento-aprovou-descida-do-irs-ate-ao-sexta-escalao-conheca-as-principais-mudancas/',
     sal: 'https://www.literaciafinanceira.pt/simulador-salario-liquido'
   };
   /* Textos e despacho de cada regiao. O despacho do continente e o DESP, que pode vir do data/irs.json. */
@@ -394,7 +394,7 @@
   var ORDEM = ['C', 'A', 'M'];
   function despacho(reg) { return reg === 'C' ? DESP : REG[reg].desp; }
 
-  var S = { mes: 1500, tipo: 'A', sit: 'nc', dep: 0, def: false, reg: 'C', tab: 'I', res: null };
+  var S = { mes: 1500, tipo: 'A', sit: 'nc', dep: 0, def: false, reg: 'C', tab: 'I', res: null, ult: 'mes', erro: '' };
 
   function milhar(s) { return s.replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
   function eur(v) { var p = Math.abs(v).toFixed(2).split('.'); return (v < 0 ? '-' : '') + milhar(p[0]) + ',' + p[1] + '€'; }
@@ -449,10 +449,21 @@
 
   function anual(bruto, tipo, reg) {
     var E = escaloes(reg).esc;
-    var ss = tipo === 'A' ? bruto * 0.11 : 0, ded = Math.min(bruto, Math.max(DED_ESP, ss)), col = Math.max(0, bruto - ded), i = 0;
+    var ss = tipo === 'A' ? bruto * 0.11 : 0, ded = Math.min(bruto, Math.max(DED_ESP, ss)), i = 0;
+    /* Minimo de existencia (artigo 70.o do CIRS): abatimento ao rendimento de quem ganha pouco acima do valor de referencia.
+       VR = valor de referencia; DG = limite das despesas gerais (250 EUR) / taxa do 1.o escalao; L1 = limite do 1.o escalao; L = VR - DG/3,60 + L1/3,60.
+       Ate VR: VR - (ded + DG). De VR a L: VR - 2,60 x (bruto - VR) - (ded + DG). Acima de L: L - L1 - 1,35 x (bruto - L) - ded.
+       Usa a taxa e o limite do 1.o escalao nacional (artigo 68.o), tambem nas regioes. */
+    var vr = Math.max(MIN_EXIST, 1.5 * 14 * IAS), dg = 250 / (ESC[0][1] / 100), l1 = ESC[0][0], lim = vr - dg / 3.6 + l1 / 3.6;
+    var abat = bruto <= vr ? vr - (ded + dg) : bruto <= lim ? vr - 2.6 * (bruto - vr) - (ded + dg) : lim - l1 - 1.35 * (bruto - lim) - ded;
+    abat = Math.max(0, Math.min(abat, bruto - ded));
+    var col = Math.max(0, bruto - ded - abat);
     while (col > E[i][0]) i++;
     var coleta = Math.max(0, col * E[i][1] / 100 - E[i][2]);
-    return { bruto: bruto, ded: ded, col: col, i: i, taxa: E[i][1], coleta: coleta, media: col > 0 ? coleta / col * 100 : 0, isento: bruto <= MIN_EXIST };
+    /* Taxa adicional de solidariedade: 2,5% entre 80.000 e 250.000 EUR de rendimento coletavel e 5% acima. So entra na conta do continente. */
+    var solBase = col > 80000, sol = solBase && reg === 'C' ? (Math.min(col, 250000) - 80000) * 0.025 + Math.max(0, col - 250000) * 0.05 : 0;
+    var total = coleta + sol;
+    return { bruto: bruto, ded: ded, abat: abat, vr: vr, col: col, i: i, taxa: E[i][1], coleta: coleta, sol: sol, semSol: solBase && reg !== 'C', total: total, media: col > 0 ? total / col * 100 : 0, isento: bruto <= vr };
   }
   function exemplo() {
     var x = retencao(1500, 'A', 'nc', 0, false, S.reg);
@@ -461,7 +472,7 @@
   }
   function calcular(mes, tipo, sit, dep, def, reg) {
     tipo = tipo || 'A'; sit = sit || 'nc'; dep = dep || 0; reg = RETS[reg] ? reg : 'C';
-    return { mes: mes, tipo: tipo, sit: sit, dep: dep, def: !!def, reg: reg, ret: retencao(mes, tipo, sit, dep, !!def, reg), an: anual(mes * 14, tipo, reg) };
+    return { mes: mes, tipo: tipo, sit: sit, dep: dep, def: !!def, reg: reg, ret: retencao(mes, tipo, sit, dep, !!def, reg), an: anual(Math.round(mes * 14 * 100) / 100, tipo, reg) };
   }
 
   function faixa(t, i) {
@@ -512,8 +523,12 @@
     else conta = eur(x.mes) + ' × ' + pct(r.taxa, 2) + ' − ' + eur(r.parcela) + (x.dep && r.porDep ? ' − ' + x.dep + ' × ' + eur(r.porDep) : '') + ' = <strong>' + eur(r.valor) + '</strong>' +
       (r.menos1 ? '. A taxa já tem o desconto de um ponto percentual para quem tem três ou mais dependentes' : '') + '.';
     var resumo = a.isento
-      ? 'Com <strong>' + eurInt(a.bruto) + '</strong> brutos por ano ficas dentro do mínimo de existência (' + eurInt(MIN_EXIST) + '): <strong>não pagas IRS</strong>, mesmo que a conta pelos escalões dê imposto.'
-      : 'Com <strong>' + eurInt(a.bruto) + '</strong> brutos por ano, o teu rendimento coletável é de <strong>' + eur(a.col) + '</strong> e ficas no <strong>' + (a.i + 1) + '.º escalão</strong>. A taxa de ' + pct(a.taxa, casas(a.taxa)) + ' só se aplica à parte do rendimento que cai nesse escalão. No total, o imposto é de <strong>' + eur(a.coleta) + '</strong> antes das deduções à coleta (despesas de saúde, educação, habitação e dependentes), que baixam este valor.';
+      ? 'Com <strong>' + eurInt(a.bruto) + '</strong> brutos por ano ficas dentro do mínimo de existência (' + eurInt(a.vr) + '): <strong>não pagas IRS</strong>, mesmo que a conta pelos escalões dê imposto.'
+      : 'Com <strong>' + eurInt(a.bruto) + '</strong> brutos por ano, o teu rendimento coletável é de <strong>' + eur(a.col) + '</strong>' +
+        (a.abat > 0 ? ', já com o abatimento do mínimo de existência (' + eur(a.abat) + '), que baixa o imposto de quem ganha pouco acima de ' + eurInt(a.vr) + ' por ano. Ficas' : ' e ficas') +
+        ' no <strong>' + (a.i + 1) + '.º escalão</strong>. A taxa de ' + pct(a.taxa, casas(a.taxa)) + ' só se aplica à parte do rendimento que cai nesse escalão. No total, o imposto é de <strong>' + eur(a.total) + '</strong> antes das deduções à coleta (despesas gerais, saúde, educação, habitação e dependentes), que baixam este valor.' +
+        (a.sol > 0 ? ' O total inclui ' + eur(a.sol) + ' de taxa adicional de solidariedade.' : '') +
+        (a.semSol ? ' Este valor não inclui a taxa adicional de solidariedade, que se aplica acima de 80.000€ de rendimento coletável.' : '');
     return '<div class="all-results_wrapper" id="irsRes"><div class="table-results_padding"><div class="table-results_wrapper"><div class="w-layout-grid grid is-calculadora"><div class="grid-block irs-gb">' +
       '<div class="text-weight-medium"><div class="text-size-extra-large"><div>Resultados</div></div></div><div class="spacer-2 spacer-mobile-1"></div>' +
       '<p class="irs-res-t">Retenção na fonte (por mês)</p>' +
@@ -527,8 +542,10 @@
       row('Taxa do escalão (marginal)', pct(a.taxa, casas(a.taxa))) +
       row('Rendimento bruto anual', eur(a.bruto), false, '14 meses de ' + oque) +
       row('Dedução específica', eur(a.ded)) +
-      row('Rendimento coletável', eur(a.col)) +
-      row('IRS antes das deduções à coleta', eur(a.isento ? 0 : a.coleta)) +
+      (a.abat > 0 && !a.isento ? row('Abatimento do mínimo de existência', eur(a.abat), false, 'Artigo 70.º do Código do IRS') : '') +
+      row('Rendimento coletável', eur(a.isento ? 0 : a.col)) +
+      (a.sol > 0 ? row('IRS pelos escalões', eur(a.coleta)) + row('Taxa adicional de solidariedade', eur(a.sol), false, '2,5% acima de 80.000€ e 5% acima de 250.000€') : '') +
+      row('IRS antes das deduções à coleta', eur(a.isento ? 0 : a.total)) +
       row('Taxa média sobre o rendimento coletável', pct(a.isento ? 0 : a.media, 2)) +
       '<p class="irs-resumo">' + resumo + '</p>' +
       '<div class="irs-disc">A retenção segue a fórmula do ' + despacho(x.reg).nome + ' para residentes ' + REG[x.reg].onde + ' e pode diferir em cêntimos do teu recibo. O escalão anual é calculado para um titular, só com este rendimento e sem tributação conjunta' + (x.def ? ', e não conta com os benefícios fiscais das pessoas com deficiência no IRS anual' : '') + '. A dedução específica é o maior valor entre ' + eur(DED_ESP) + ' (8,54 × IAS) e os descontos para a Segurança Social. Os resultados são simulações indicativas e não representam aconselhamento fiscal.</div>' +
@@ -566,7 +583,7 @@
       : S.reg === 'M'
         ? '<p class="irs-p">Na Madeira, os limites dos escalões são os mesmos e as taxas são 30% mais baixas em todos os escalões. Estão no <a href="' + L.madeiraEsc + '" target="_blank" rel="noopener">Decreto Legislativo Regional n.º 8/2025/M</a>, o Orçamento da Região para 2026.</p>'
         : '';
-    var propReg = S.reg === 'A' ? ' Nos Açores, a redução de 30% incide sobre as taxas nacionais em vigor, por isso as taxas da região descem também se a proposta for aprovada.'
+    var propReg = S.reg === 'A' ? ' Nos Açores, a redução de 30% incide sobre as taxas nacionais em vigor, por isso as taxas da região descem também quando as nacionais descerem.'
       : S.reg === 'M' ? ' Na Madeira, as taxas estão num diploma da Região e só mudam se esse diploma for alterado.' : '';
 
     root.innerHTML =
@@ -580,15 +597,16 @@
       '<div class="calculadora-content_wrapper irs-calc"><div class="calculadora-form_wrapper"><div class="w-layout-grid grid is-calculadora"><div class="grid-block irs-gb" id="calc-inputs_wrapper">' +
       '<div class="calculator-title_wrapper"><div class="text-size-medium"><div>Calculadora de retenção na fonte e escalão de IRS</div></div><div class="spacer-1"></div><div class="horizontal-line border-secondary"></div></div>' +
       '<form class="form_form" id="calc-tabelas-irs" onsubmit="return false">' +
-      campo('irsMes', 'Valor bruto por mês', '<div class="input-text_wrapper"><input id="irsMes" class="form_input is-normal" type="text" inputmode="numeric" autocomplete="off" value="' + milhar(String(Math.round(S.mes))) + '">' + SUF + '</div>') +
+      campo('irsMes', 'Valor bruto por mês', '<div class="input-text_wrapper"><input id="irsMes" class="form_input is-normal" type="text" inputmode="numeric" autocomplete="off" value="' + (S.mes > 0 ? milhar(String(Math.round(S.mes))) : '') + '">' + SUF + '</div>') +
       '<div class="irs-ou" aria-hidden="true"><span>ou</span></div>' +
-      campo('irsBruto', 'Valor bruto por ano (14 meses)', '<div class="input-text_wrapper"><input id="irsBruto" class="form_input is-normal" type="text" inputmode="numeric" autocomplete="off" value="' + milhar(String(Math.round(S.mes * 14))) + '">' + SUF + '</div>') +
+      campo('irsBruto', 'Valor bruto por ano (14 meses)', '<div class="input-text_wrapper"><input id="irsBruto" class="form_input is-normal" type="text" inputmode="numeric" autocomplete="off" value="' + (S.mes > 0 ? milhar(String(Math.round(S.mes * 14))) : '') + '">' + SUF + '</div>') +
       '<p class="irs-hint">Preenche só um dos dois valores. O outro é calculado por nós.</p><div class="spacer-1-5"></div>' +
       campo('irsTipo', 'Rendimento', '<select class="form_input is-normal irs-select" id="irsTipo">' + op('A', S.tipo, 'Salário') + op('H', S.tipo, 'Pensão') + '</select>') + '<div class="spacer-1-5"></div>' +
       campo('irsReg', 'Região', '<select class="form_input is-normal irs-select" id="irsReg">' + ORDEM.map(function (r) { return op(r, S.reg, REG[r].n); }).join('') + '</select>') + '<div class="spacer-1-5"></div>' +
       campo('irsSit', 'Situação', '<select class="form_input is-normal irs-select" id="irsSit">' + op('nc', S.sit, 'Não casado') + op('c2', S.sit, 'Casado, dois titulares') + op('c1', S.sit, 'Casado, único titular') + '</select>') + '<div class="spacer-1-5"></div>' +
       campo('irsDep', 'Dependentes', '<select class="form_input is-normal irs-select" id="irsDep">' + [0, 1, 2, 3, 4, 5, 6].map(function (d) { return op(d, S.dep, d === 0 ? 'Nenhum' : String(d)); }).join('') + '</select>') + '<div class="spacer-1-5"></div>' +
       '<label class="irs-check"><input type="checkbox" id="irsDef"' + (S.def ? ' checked' : '') + '><span>Tenho deficiência (incapacidade de 60% ou mais)</span></label>' +
+      (S.erro ? '<div class="irs-aviso irs-erro" id="irsErro" role="alert"><div>' + S.erro + '</div></div>' : '') +
       '<div class="spacer-2"></div><a id="calcular" href="#" class="button is-form-submit w-button">Calcular</a>' +
       '</form></div></div></div>' + resultado() + '</div>' +
 
@@ -604,7 +622,7 @@
       botoesRegiao() + escReg +
       tabEscaloes(S.res && S.res.reg === S.reg && !S.res.an.isento ? S.res.an.i : -1) +
       '<p class="dp-foot">IRS = rendimento coletável × taxa do escalão − parcela a abater. A parcela a abater é calculada por nós a partir das taxas da lei e dá o mesmo resultado que aplicar cada taxa à sua fatia de rendimento.' + (S.reg === 'C' ? ' Rendimentos coletáveis acima de 80.000€ pagam ainda a taxa adicional de solidariedade (2,5% até 250.000€ e 5% acima).' : '') + '</p>' +
-      (mudou ? '' : '<div class="irs-aviso"><div><strong>Pode mudar ainda em 2026:</strong> o Governo entregou no Parlamento, a 21 de setembro de 2026, uma proposta para baixar as taxas nacionais do 1.º ao 6.º escalão (para 12,2%, 15,2%, 20,7%, 23,6%, 30,6% e 34,6%), com efeitos em todo o ano de 2026 e novas tabelas de retenção a partir de novembro. À data da última verificação ainda não era lei.' + propReg + ' <a href="' + L.prop + '" target="_blank" rel="noopener">Fonte: ECO</a>.</div></div>') +
+      (mudou ? '' : '<div class="irs-aviso"><div><strong>Deve mudar ainda em 2026:</strong> o Parlamento aprovou, a 9 de outubro de 2026, a autorização para o Governo baixar as taxas nacionais do 1.º ao 6.º escalão (para 12,2%, 15,2%, 20,7%, 23,6%, 30,6% e 34,6%), com efeitos em todo o ano de 2026. O Governo quer novas tabelas de retenção a partir de novembro. Ainda faltam a promulgação, o decreto-lei que altera o artigo 68.º e o despacho com as tabelas. Até lá valem os valores desta página.' + propReg + ' <a href="' + L.prop + '" target="_blank" rel="noopener">Fonte: Human Resources</a>.</div></div>') +
       '<ul class="irs-fontes"><li><a href="' + (DESP.url || L.desp) + '" target="_blank" rel="noopener">' + DESP.nome + ', de ' + DESP.data + '</a>: tabelas de retenção na fonte do continente.</li><li><a href="' + L.circ + '" target="_blank" rel="noopener">Circular n.º 1/2026 da Autoridade Tributária</a>: instruções de aplicação das tabelas.</li>' +
       '<li><a href="' + L.acores + '" target="_blank" rel="noopener">Despacho n.º 1179/2026, de 3 de fevereiro</a> e <a href="' + L.acoresCirc + '" target="_blank" rel="noopener">Circular n.º 3/2026 da Autoridade Tributária</a>: tabelas de retenção na fonte dos Açores.</li>' +
       '<li><a href="' + L.madeira + '" target="_blank" rel="noopener">Despacho n.º 19/2026 da Secretaria Regional das Finanças</a>, <a href="' + L.madeiraRet + '" target="_blank" rel="noopener">Declaração de Retificação n.º 10/2026</a> e <a href="' + L.madeiraCirc + '" target="_blank" rel="noopener">Circular n.º 2/2026 da Autoridade Tributária</a>: tabelas de retenção na fonte da Madeira.</li>' +
@@ -615,7 +633,8 @@
 
   function num(id) { var el = document.getElementById(id); return el ? parseInt(String(el.value).replace(/\D/g, ''), 10) || 0 : 0; }
   function lerForm() {
-    S.mes = Math.min(num('irsMes'), 10000000);
+    /* Se o ultimo campo escrito foi o anual, a conta parte desse valor exato e nao do mensal arredondado */
+    S.mes = S.ult === 'ano' ? Math.min(num('irsBruto'), 140000000) / 14 : Math.min(num('irsMes'), 10000000);
     var g = function (id) { var el = document.getElementById(id); return el ? el.value : ''; };
     S.tipo = g('irsTipo') || 'A'; S.sit = g('irsSit') || 'nc'; S.dep = parseInt(g('irsDep'), 10) || 0;
     var d = document.getElementById('irsDef'); S.def = !!(d && d.checked);
@@ -664,6 +683,13 @@
     if (t.closest('#calcular')) {
       e.preventDefault();
       lerForm();
+      if (!(S.mes > 0)) {
+        S.res = null; S.erro = 'Indica o teu valor bruto por mês ou por ano para fazermos a conta.';
+        render();
+        var cm = document.getElementById('irsMes'); if (cm && cm.focus) cm.focus();
+        return;
+      }
+      S.erro = '';
       S.res = calcular(S.mes, S.tipo, S.sit, S.dep, S.def, S.reg);
       S.tab = S.res.ret.k;
       render();
@@ -679,6 +705,7 @@
   document.addEventListener('input', function (e) {
     var id = e.target && e.target.id;
     if (id !== 'irsBruto' && id !== 'irsMes') return;
+    S.ult = id === 'irsBruto' ? 'ano' : 'mes';
     var v = parseInt(String(e.target.value).replace(/\D/g, ''), 10);
     e.target.value = isNaN(v) ? '' : milhar(String(v));
     var outro = document.getElementById(id === 'irsBruto' ? 'irsMes' : 'irsBruto');
