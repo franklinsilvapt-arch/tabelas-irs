@@ -10,6 +10,10 @@
   window.__lfIrsInit = true;
 
   var VERIFICADO = '1 de outubro de 2026';
+  /* Novembro de 2026: no continente, a retencao sobre salarios e pensoes pagos em novembro e metade do valor das tabelas,
+     tambem no subsidio de Natal pago nesse mes (despacho das Financas publicado a 14/10/2026). Em dezembro voltam os valores
+     das tabelas. Os avisos e a linha de novembro deixam de aparecer a 1 de dezembro de 2026. */
+  var NOV = new Date() < new Date(2026, 11, 1);
   var IAS = 537.13, DED_ESP = 8.54 * IAS, MIN_EXIST = 12880;
   /* Valores por omissao do continente. Sao substituidos pelos de data/irs.json, que o atualizar_irs.py mantem a partir do Diario da Republica e do Portal das Financas. */
   var DESP = { nome: 'Despacho n.º 233-A/2026', data: '6 de janeiro', inicio: '1 de janeiro de 2026', url: null };
@@ -380,7 +384,8 @@
     madeiraCirc: 'https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/legislacao/instrucoes_administrativas/Documents/Circular_2_2026.pdf',
     madeiraEsc: 'https://diariodarepublica.pt/dr/detalhe/decreto-legislativo-regional/8-2025-993031451',
     tabelasAT: 'https://info.portaldasfinancas.gov.pt/pt/apoio_contribuinte/tabela_ret_doclib/Pages/default.aspx',
-    prop: 'https://hrportugal.sapo.pt/parlamento-aprovou-descida-do-irs-ate-ao-sexta-escalao-conheca-as-principais-mudancas/',
+    prop: 'https://portugal.gov.pt/gc25/comunicacao/comunicados/reducao-das-retencoes-na-fonte-em-novembro-',
+    taxas: 'https://portugal.gov.pt/api/media/edge/Project/Portal-do-Governo/Portal-do-Governo/gc25/documentos/Financas/20260917_IRS_Set2026_simulacoes.pdf',
     sal: 'https://www.literaciafinanceira.pt/simulador-salario-liquido'
   };
   /* Textos e despacho de cada regiao. O despacho do continente e o DESP, que pode vir do data/irs.json. */
@@ -533,6 +538,7 @@
       '<div class="text-weight-medium"><div class="text-size-extra-large"><div>Resultados</div></div></div><div class="spacer-2 spacer-mobile-1"></div>' +
       '<p class="irs-res-t">Retenção na fonte (por mês)</p>' +
       row('IRS retido por mês', eur(r.valor), true) +
+      (NOV && x.reg === 'C' && r.valor > 0 ? row('IRS retido em novembro', eur(r.valor / 2), false, 'Metade, também no subsídio de Natal pago em novembro') : '') +
       row('Tabela que se aplica', 'Tabela ' + r.k + ' ' + REG[x.reg].de, false, t.t.replace(' — ', ', ').toLowerCase().replace(/^./, function (c) { return c.toUpperCase(); })) +
       row('Linha da tabela', faixa(t, r.i)) +
       row('Taxa efetiva de retenção', pct(r.efetiva, 1)) +
@@ -578,10 +584,15 @@
     var avisoReg = (S.reg !== 'C' && DESP.nome !== DESP0)
       ? '<div class="irs-aviso"><div><strong>Confirma se há tabelas novas:</strong> as do continente mudaram com o ' + DESP.nome + '. As ' + REG[S.reg].de + ' que vês aqui são as do ' + dR.nome + '. Se já saiu um despacho novo para a região, está na <a href="' + L.tabelasAT + '" target="_blank" rel="noopener">página de tabelas de retenção do Portal das Finanças</a>.</div></div>'
       : '';
+    var avisoNov = !NOV ? '' : S.reg === 'C'
+      ? '<div class="irs-aviso"><div><strong>Em novembro retêm-te metade:</strong> no continente, a retenção sobre salários e pensões pagos em novembro de 2026 é metade do valor destas tabelas, também no subsídio de Natal pago nesse mês. Em dezembro voltam os valores das tabelas. <a href="' + L.prop + '" target="_blank" rel="noopener">Fonte: Ministério das Finanças</a>.</div></div>'
+      : '<div class="irs-aviso"><div><strong>Novembro de 2026:</strong> no continente, a retenção de novembro é metade do valor das tabelas. ' + (S.reg === 'A' ? 'Para os Açores' : 'Para a Madeira') + ' não saiu nada até 14 de outubro, por isso aqui valem os valores das tabelas. <a href="' + L.prop + '" target="_blank" rel="noopener">Fonte: Ministério das Finanças</a>.</div></div>';
     var escReg = S.reg === 'A'
       ? '<p class="irs-p">Nos Açores, os limites dos escalões são os mesmos e as taxas são 30% mais baixas em todos os escalões. É a redução do artigo 4.º do Decreto Legislativo Regional n.º 2/99/A, aplicada às taxas nacionais em vigor.</p>'
       : S.reg === 'M'
-        ? '<p class="irs-p">Na Madeira, os limites dos escalões são os mesmos e as taxas são 30% mais baixas em todos os escalões. Estão no <a href="' + L.madeiraEsc + '" target="_blank" rel="noopener">Decreto Legislativo Regional n.º 8/2025/M</a>, o Orçamento da Região para 2026.</p>'
+        ? (mudou
+          ? '<p class="irs-p">Na Madeira, os limites dos escalões são os mesmos e as taxas estão no <a href="' + L.madeiraEsc + '" target="_blank" rel="noopener">Decreto Legislativo Regional n.º 8/2025/M</a>, o Orçamento da Região para 2026. Foram fixadas 30% abaixo das taxas nacionais do Orçamento do Estado. Com a descida nacional, a diferença é menor nos seis primeiros escalões até a Região mudar o diploma.</p>'
+          : '<p class="irs-p">Na Madeira, os limites dos escalões são os mesmos e as taxas são 30% mais baixas em todos os escalões. Estão no <a href="' + L.madeiraEsc + '" target="_blank" rel="noopener">Decreto Legislativo Regional n.º 8/2025/M</a>, o Orçamento da Região para 2026.</p>')
         : '';
     var propReg = S.reg === 'A' ? ' Nos Açores, a redução de 30% incide sobre as taxas nacionais em vigor, por isso as taxas da região descem também quando as nacionais descerem.'
       : S.reg === 'M' ? ' Na Madeira, as taxas estão num diploma da Região e só mudam se esse diploma for alterado.' : '';
@@ -612,7 +623,7 @@
 
       '<div class="irs-sec"><h2 class="heading-style-h2 irs-h2">Tabelas de retenção na fonte de IRS ' + ANO + '</h2>' +
       '<p class="irs-p">A retenção na fonte é o IRS que a entidade patronal ou a Segurança Social desconta todos os meses no teu salário ou pensão, por conta do imposto final. O continente, os Açores e a Madeira têm tabelas diferentes: escolhe a tua região. As de ' + anoR + ' ' + REG[S.reg].para + ' estão no ' + ondeEsta + ', e aplicam-se desde ' + dR.inicio.replace(/ de \d{4}$/, '') + '. São 11 em cada região: três para trabalho dependente, quatro para trabalhadores com deficiência e quatro para pensões.</p>' +
-      botoesRegiao() + tabs + '<p class="irs-p irs-tab-t"><strong>Tabela ' + atual.k + ' ' + REG[S.reg].de + ':</strong> ' + (pens ? 'pensões, ' : 'trabalho dependente, ') + atual.t.replace(' — ', ', ').toLowerCase() + '.</p>' +
+      avisoNov + botoesRegiao() + tabs + '<p class="irs-p irs-tab-t"><strong>Tabela ' + atual.k + ' ' + REG[S.reg].de + ':</strong> ' + (pens ? 'pensões, ' : 'trabalho dependente, ') + atual.t.replace(' — ', ', ').toLowerCase() + '.</p>' +
       tabRetencao() +
       '<p class="dp-foot">' + formula + nota + ' ' + exemplo() + ' Para o valor exato do teu salário líquido, usa o <a href="' + L.sal + '">simulador de salário líquido</a>.</p>' +
       avisoReg + '</div>' +
@@ -622,7 +633,7 @@
       botoesRegiao() + escReg +
       tabEscaloes(S.res && S.res.reg === S.reg && !S.res.an.isento ? S.res.an.i : -1) +
       '<p class="dp-foot">IRS = rendimento coletável × taxa do escalão − parcela a abater. A parcela a abater é calculada por nós a partir das taxas da lei e dá o mesmo resultado que aplicar cada taxa à sua fatia de rendimento.' + (S.reg === 'C' ? ' Rendimentos coletáveis acima de 80.000€ pagam ainda a taxa adicional de solidariedade (2,5% até 250.000€ e 5% acima).' : '') + '</p>' +
-      (mudou ? '' : '<div class="irs-aviso"><div><strong>Deve mudar ainda em 2026:</strong> o Parlamento aprovou, a 9 de outubro de 2026, a autorização para o Governo baixar as taxas nacionais do 1.º ao 6.º escalão (para 12,2%, 15,2%, 20,7%, 23,6%, 30,6% e 34,6%), com efeitos em todo o ano de 2026. O Governo quer novas tabelas de retenção a partir de novembro. Ainda faltam a promulgação, o decreto-lei que altera o artigo 68.º e o despacho com as tabelas. Até lá valem os valores desta página.' + propReg + ' <a href="' + L.prop + '" target="_blank" rel="noopener">Fonte: Human Resources</a>.</div></div>') +
+      (mudou ? '' : '<div class="irs-aviso"><div><strong>Deve mudar ainda em 2026:</strong> o Parlamento aprovou, a 9 de outubro de 2026, a descida das taxas nacionais do 1.º ao 6.º escalão para <a href="' + L.taxas + '" target="_blank" rel="noopener">12,2%, 15,2%, 20,7%, 23,6%, 30,6% e 34,6%</a>, com efeitos em todo o ano de 2026. Falta o decreto-lei do Governo que altera o artigo 68.º. Até lá valem os valores desta página.' + propReg + ' <a href="' + L.prop + '" target="_blank" rel="noopener">Fonte: Ministério das Finanças</a>.</div></div>') +
       '<ul class="irs-fontes"><li><a href="' + (DESP.url || L.desp) + '" target="_blank" rel="noopener">' + DESP.nome + ', de ' + DESP.data + '</a>: tabelas de retenção na fonte do continente.</li><li><a href="' + L.circ + '" target="_blank" rel="noopener">Circular n.º 1/2026 da Autoridade Tributária</a>: instruções de aplicação das tabelas.</li>' +
       '<li><a href="' + L.acores + '" target="_blank" rel="noopener">Despacho n.º 1179/2026, de 3 de fevereiro</a> e <a href="' + L.acoresCirc + '" target="_blank" rel="noopener">Circular n.º 3/2026 da Autoridade Tributária</a>: tabelas de retenção na fonte dos Açores.</li>' +
       '<li><a href="' + L.madeira + '" target="_blank" rel="noopener">Despacho n.º 19/2026 da Secretaria Regional das Finanças</a>, <a href="' + L.madeiraRet + '" target="_blank" rel="noopener">Declaração de Retificação n.º 10/2026</a> e <a href="' + L.madeiraCirc + '" target="_blank" rel="noopener">Circular n.º 2/2026 da Autoridade Tributária</a>: tabelas de retenção na fonte da Madeira.</li>' +
