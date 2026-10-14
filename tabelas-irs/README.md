@@ -19,7 +19,8 @@ Ferramenta da página `/tabelas-irs` do literaciafinanceira.pt: as 11 tabelas de
 
 ## Quando atualizar
 
-1. Continente e escalões nacionais: o workflow trata disso. Se a proposta do Governo de 21/09/2026 for aprovada, o `data/irs.json` passa a trazer as taxas e as tabelas novas, e convém rever o aviso amarelo.
+1. Continente e escalões nacionais: o workflow trata disso. A descida das taxas de 2026 foi aprovada pelo Parlamento a 9/10/2026: quando o decreto-lei sair, o artigo 68.º do Portal das Finanças muda e o `data/irs.json` passa a trazer as taxas novas sozinho. O aviso amarelo dos escalões desaparece nessa altura e o texto da Madeira muda para explicar a diferença.
+   Novembro de 2026: o despacho das Finanças de 14/10/2026 manda reter só metade do valor das tabelas do Despacho n.º 233-A/2026 em novembro, também no subsídio de Natal pago nesse mês. Não traz tabelas novas, por isso o workflow não o lê (se o apanhar, falha ao procurar as tabelas e os dados ficam como estão). A regra está no JS (constante `NOV`): mostra a linha "IRS retido em novembro" e os avisos até 30 de novembro e sai sozinha a 1 de dezembro.
 2. Açores e Madeira, retenção: quando sair um despacho novo para uma região, substituir `RET_A` ou `RET_M` e os dados do despacho em `REG`. Se as tabelas do continente mudarem primeiro, a página mostra um aviso na vista das regiões até isto ser feito.
 3. Madeira, escalões: se a Região mudar as taxas, atualizar `TAXAS_M`.
 4. Em janeiro de cada ano: novos despachos de retenção das três regiões, novos escalões, IAS (`IAS`) e mínimo de existência (`MIN_EXIST`).
