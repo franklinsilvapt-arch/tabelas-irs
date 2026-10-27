@@ -153,6 +153,8 @@
     root.innerHTML = html();
     /* O tabelas-irs.js precisa de um #lf-dp escondido (data-sn-sink) para nao criar um novo junto ao h1; o simulador so usa o motor de calculo */
     if (LFK.selects) LFK.selects(root);
+    /* O site usa o Lenis (scroll suave), que apanha a roda do rato e impede o scroll dentro das listas: data-lenis-prevent devolve o scroll nativo a cada lista */
+    Array.prototype.forEach.call(root.querySelectorAll('.lfk-dd-list'), function (l) { l.setAttribute('data-lenis-prevent', ''); });
     if (LFK.numInputs) LFK.numInputs(root);
     if (LFK.theme) LFK.theme(root);
     root.addEventListener('change', function (e) { if (e.target && e.target.name === 'duo') atualizarMes(); });
