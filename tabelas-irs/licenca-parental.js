@@ -147,6 +147,9 @@
     if (!root) return;
     root.className = 'lfk';
     root.innerHTML = html();
+    /* Dentro de um artigo, a calculadora ocupa a largura da coluna de texto (o kit fixa 52,625rem para as paginas de ferramentas) */
+    var calcEl = root.querySelector('.lfk-calc');
+    if (calcEl && root.closest('.w-richtext')) { calcEl.style.width = '100%'; calcEl.style.minWidth = '0'; }
     if (LFK.selects) LFK.selects(root);
     if (LFK.numInputs) LFK.numInputs(root);
     if (LFK.theme) LFK.theme(root);
