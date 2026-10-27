@@ -9,7 +9,7 @@
    - Seguranca Social: 11% a cargo do trabalhador.
    - Novembro de 2026: retencao a metade no continente (Despacho n.o 12523-A/2026) e nos Acores (Despacho
      n.o 12610-A/2026), tambem no subsidio de Natal pago nesse mes. Ficam de fora os rendimentos mensais acima do
-     limite superior do penultimo escalao da tabela. A Madeira nao tem regra equivalente publicada. */
+     limite superior do penultimo escalao da tabela. A Madeira anunciou a 27/10/2026 uma descida propria, que so conta quando publicar as novas tabelas. */
 (function () {
   'use strict';
   if (window.__lfSnInit) return;
@@ -69,7 +69,7 @@
       '<div class="lfk-kv"><span id="sn-r-irs-l">Retenção de IRS</span><span id="sn-r-irs">0,00€</span></div>' +
       '<div class="lfk-kv"><span>Segurança Social (11%)</span><span id="sn-r-ss">0,00€</span></div>' +
       '<div id="sn-r-extra"></div>' +
-      '<p class="lfk-summary" id="sn-r-frase"></p>' +
+      '<p class="lfk-summary" style="margin-top:1.5rem" id="sn-r-frase"></p>' +
       '<div id="sn-r-alerta"></div>' +
       '</div></div>' +
       '</div>';
@@ -139,9 +139,9 @@
 
     var alerta = '';
     if (NOV_ATIVO && p < 1) {
-      if (novPode && irsFinalNormal > 0) alerta = '<div class="lfk-alert is-ok">' + NOV_REG[reg] + ', o IRS retido em novembro de 2026 é metade do normal, também no subsídio de Natal pago nesse mês. É um adiantamento da descida do IRS de 2026: o acerto final faz-se na declaração de IRS de 2027.</div>';
-      else if (acima && NOV_REG[reg]) alerta = '<div class="lfk-alert is-warn">A retenção a metade de novembro não se aplica a salários acima de ' + f(limite) + ' por mês, por isso a tua retenção não muda.</div>';
-      else if (reg === 'M') alerta = '<div class="lfk-alert">Na Madeira não foi publicada uma regra de retenção a metade em novembro, por isso a retenção é a normal em qualquer mês.</div>';
+      if (novPode && irsFinalNormal > 0) alerta = '<div class="lfk-alert is-ok" style="margin-top:1rem">' + NOV_REG[reg] + ', o IRS retido em novembro de 2026 é metade do normal, também no subsídio de Natal pago nesse mês. É um adiantamento da descida do IRS de 2026: o acerto final faz-se na declaração de IRS de 2027.</div>';
+      else if (acima && NOV_REG[reg]) alerta = '<div class="lfk-alert is-warn" style="margin-top:1rem">A retenção a metade de novembro não se aplica a salários acima de ' + f(limite) + ' por mês, por isso a tua retenção não muda.</div>';
+      else if (reg === 'M') alerta = '<div class="lfk-alert" style="margin-top:1rem">Na Madeira, a retenção de novembro só muda quando o Governo Regional publicar as novas tabelas de retenção. Até lá, o simulador usa as tabelas da Madeira em vigor.</div>';
     }
     el('sn-r-alerta').innerHTML = alerta;
   }
