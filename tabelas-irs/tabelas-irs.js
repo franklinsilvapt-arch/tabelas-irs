@@ -10,9 +10,10 @@
   window.__lfIrsInit = true;
 
   var VERIFICADO = '1 de outubro de 2026';
-  /* Novembro de 2026: no continente, a retencao sobre salarios e pensoes pagos em novembro e metade do valor das tabelas,
-     tambem no subsidio de Natal pago nesse mes (despacho das Financas publicado a 14/10/2026). Em dezembro voltam os valores
-     das tabelas. Os avisos e a linha de novembro deixam de aparecer a 1 de dezembro de 2026. */
+  /* Novembro de 2026: no continente (Despacho n.o 12523-A/2026) e nos Acores (Despacho n.o 12610-A/2026), a retencao sobre
+     salarios e pensoes pagos em novembro e metade do valor das tabelas, tambem no subsidio de Natal pago nesse mes. Ficam de fora
+     os rendimentos mensais acima do limite do penultimo escalao da tabela. A Madeira anunciou a 27/10/2026 uma descida propria,
+     que so conta quando publicar novas tabelas. Os avisos e a linha de novembro deixam de aparecer a 1 de dezembro de 2026. */
   var NOV = new Date() < new Date(2026, 11, 1);
   var IAS = 537.13, DED_ESP = 8.54 * IAS, MIN_EXIST = 12880;
   /* Valores por omissao do continente. Sao substituidos pelos de data/irs.json, que o atualizar_irs.py mantem a partir do Diario da Republica e do Portal das Financas. */
@@ -538,7 +539,7 @@
       '<div class="text-weight-medium"><div class="text-size-extra-large"><div>Resultados</div></div></div><div class="spacer-2 spacer-mobile-1"></div>' +
       '<p class="irs-res-t">Retenção na fonte (por mês)</p>' +
       row('IRS retido por mês', eur(r.valor), true) +
-      (NOV && x.reg === 'C' && r.valor > 0 ? row('IRS retido em novembro', eur(r.valor / 2), false, 'Metade, também no subsídio de Natal pago em novembro') : '') +
+      (NOV && (x.reg === 'C' || x.reg === 'A') && r.valor > 0 && t.r.length > 1 && x.mes <= t.r[t.r.length - 2][0] ? row('IRS retido em novembro', eur(r.valor / 2), false, 'Metade, também no subsídio de Natal pago em novembro') : '') +
       row('Tabela que se aplica', 'Tabela ' + r.k + ' ' + REG[x.reg].de, false, t.t.replace(' — ', ', ').toLowerCase().replace(/^./, function (c) { return c.toUpperCase(); })) +
       row('Linha da tabela', faixa(t, r.i)) +
       row('Taxa efetiva de retenção', pct(r.efetiva, 1)) +
@@ -584,9 +585,9 @@
     var avisoReg = (S.reg !== 'C' && DESP.nome !== DESP0)
       ? '<div class="irs-aviso"><div><strong>Confirma se há tabelas novas:</strong> as do continente mudaram com o ' + DESP.nome + '. As ' + REG[S.reg].de + ' que vês aqui são as do ' + dR.nome + '. Se já saiu um despacho novo para a região, está na <a href="' + L.tabelasAT + '" target="_blank" rel="noopener">página de tabelas de retenção do Portal das Finanças</a>.</div></div>'
       : '';
-    var avisoNov = !NOV ? '' : S.reg === 'C'
-      ? '<div class="irs-aviso"><div><strong>Em novembro retêm-te metade:</strong> no continente, a retenção sobre salários e pensões pagos em novembro de 2026 é metade do valor destas tabelas, também no subsídio de Natal pago nesse mês. Em dezembro voltam os valores das tabelas. <a href="' + L.prop + '" target="_blank" rel="noopener">Fonte: Ministério das Finanças</a>.</div></div>'
-      : '<div class="irs-aviso"><div><strong>Novembro de 2026:</strong> no continente, a retenção de novembro é metade do valor das tabelas. ' + (S.reg === 'A' ? 'Para os Açores' : 'Para a Madeira') + ' não saiu nada até 14 de outubro, por isso aqui valem os valores das tabelas. <a href="' + L.prop + '" target="_blank" rel="noopener">Fonte: Ministério das Finanças</a>.</div></div>';
+    var avisoNov = !NOV ? '' : S.reg !== 'M'
+      ? '<div class="irs-aviso"><div><strong>Em novembro retêm-te metade:</strong> ' + (S.reg === 'A' ? 'nos Açores' : 'no continente') + ', a retenção sobre salários e pensões pagos em novembro de 2026 é metade do valor destas tabelas, também no subsídio de Natal pago nesse mês. Ficam de fora os rendimentos acima do limite do penúltimo escalão de cada tabela. Em dezembro voltam os valores das tabelas. <a href="' + (S.reg === 'A' ? 'https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/legislacao/diplomas_legislativos/Documents/despacho-12610-a-2026.pdf' : L.prop) + '" target="_blank" rel="noopener">' + (S.reg === 'A' ? 'Fonte: Despacho n.º 12610-A/2026' : 'Fonte: Ministério das Finanças') + '</a>.</div></div>'
+      : '<div class="irs-aviso"><div><strong>Novembro de 2026:</strong> no continente e nos Açores, a retenção de novembro é metade do valor das tabelas. Na Madeira, o Governo Regional anunciou a 27 de outubro uma descida própria do IRS, que só muda a retenção quando forem publicadas as novas tabelas. Até lá, valem os valores destas tabelas.</div></div>';
     var escReg = S.reg === 'A'
       ? '<p class="irs-p">Nos Açores, os limites dos escalões são os mesmos e as taxas são 30% mais baixas em todos os escalões. É a redução do artigo 4.º do Decreto Legislativo Regional n.º 2/99/A, aplicada às taxas nacionais em vigor.</p>'
       : S.reg === 'M'
