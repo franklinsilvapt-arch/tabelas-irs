@@ -73,7 +73,7 @@
       '<div class="lfk-card-head"><div class="lfk-h-sm">Datas da licença</div></div>' +
       '<div class="lfk-kv"><span>Regras que se aplicam</span><span id="lp-r-regras"></span></div>' +
       '<div class="lfk-kv"><span>Início da licença</span><span id="lp-r-inicio"></span></div>' +
-      '<div class="lfk-kv"><span>Fim das 6 semanas da mãe</span><span id="lp-r-mae"></span></div>' +
+      '<div class="lfk-kv"><span>Mãe: 6 semanas até</span><span id="lp-r-mae"></span></div>' +
       '<div class="lfk-kv"><span>Pai: primeiros 7 dias até</span><span id="lp-r-pai7"></span></div>' +
       '<div class="lfk-kv"><span>Pai: outros 21 dias até</span><span id="lp-r-pai28"></span></div>' +
       '<p class="lfk-summary" style="margin-top:1.5rem" id="lp-r-frase"></p>' +
@@ -81,7 +81,7 @@
       '</div>' +
       '<div class="lfk-card" style="margin-top:1.5rem">' +
       '<div class="lfk-card-head"><div class="lfk-h-sm">Quanto recebes em cada opção</div></div>' +
-      '<div class="lfk-table-wrap"><table class="lfk-table is-dark"><thead><tr><th>Opção</th><th>Mãe por mês</th><th>Pai por mês</th></tr></thead><tbody id="lp-r-tabela"></tbody></table></div>' +
+      '<div class="lfk-table-wrap"><table class="lfk-table is-dark"><thead><tr><th>Opção</th><th style="min-width:0">Mãe por mês</th><th style="min-width:0">Pai por mês</th></tr></thead><tbody id="lp-r-tabela"></tbody></table></div>' +
       '<p class="lfk-table-note" id="lp-r-nota"></p>' +
       '</div></div>' +
       '<div class="lfk-empty" id="lp-placeholder"><p>Preenche os dados e clica em <b>Calcular</b> para veres as datas e os valores.</p></div>' +
@@ -122,9 +122,9 @@
 
     var linhas = '';
     r.opcoes.forEach(function (x) {
-      linhas += '<tr><td style="white-space:normal"><b>' + x.dias + ' dias a ' + pct(x.p) + '</b><br><span class="lfk-small lfk-muted">' + x.cond + '. Termina a ' + dtxt(x.fim) + '.</span></td>' +
-        '<td class="is-num">' + (x.mae === null ? '-' : eur(x.mae)) + '</td>' +
-        '<td class="is-num">' + (x.pai === null ? '-' : eur(x.pai)) + '</td></tr>';
+      linhas += '<tr><td style="white-space:normal;min-width:0"><b>' + x.dias + ' dias a ' + pct(x.p) + '</b><br><span class="lfk-small lfk-muted">' + x.cond + '. Termina a ' + dtxt(x.fim) + '.</span></td>' +
+        '<td class="is-num" style="min-width:0">' + (x.mae === null ? '-' : eur(x.mae)) + '</td>' +
+        '<td class="is-num" style="min-width:0">' + (x.pai === null ? '-' : eur(x.pai)) + '</td></tr>';
     });
     el('lp-r-tabela').innerHTML = linhas;
     el('lp-r-nota').textContent = 'Valores arredondados ao euro, por mês de 30 dias, sem IRS nem descontos para a Segurança Social. Nos 28 dias obrigatórios e nos 7 opcionais, o pai recebe sempre 100%' + (r.paiCem !== null ? ' (' + f(r.paiCem) + ' por mês)' : '') + '. Cada um recebe só nos dias em que está de licença.' + (r.extra ? ' Inclui mais ' + r.extra + ' dias por gémeos.' : '');
