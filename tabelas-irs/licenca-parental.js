@@ -42,6 +42,8 @@
   function c(v) { return Math.round(v * 100) / 100; }
   function d(s) { var p = String(s).split('-'); return Date.UTC(+p[0], +p[1] - 1, +p[2]); }
   function dtxt(t) { var x = new Date(t); return ('0' + x.getUTCDate()).slice(-2) + '/' + ('0' + (x.getUTCMonth() + 1)).slice(-2) + '/' + x.getUTCFullYear(); }
+  /* Euros sem casas decimais, para a tabela caber num telemovel */
+  function eur(v) { return String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '€'; }
   function pct(p) { return Math.round(p * 100) + '%'; }
 
   function html() {
@@ -71,15 +73,15 @@
       '<div class="lfk-card-head"><div class="lfk-h-sm">Datas da licença</div></div>' +
       '<div class="lfk-kv"><span>Regras que se aplicam</span><span id="lp-r-regras"></span></div>' +
       '<div class="lfk-kv"><span>Início da licença</span><span id="lp-r-inicio"></span></div>' +
-      '<div class="lfk-kv"><span>Fim dos 42 dias obrigatórios da mãe</span><span id="lp-r-mae"></span></div>' +
-      '<div class="lfk-kv"><span>Pai: 7 dias seguidos a seguir ao parto, até</span><span id="lp-r-pai7"></span></div>' +
-      '<div class="lfk-kv"><span>Pai: restantes 21 dias obrigatórios, até</span><span id="lp-r-pai28"></span></div>' +
+      '<div class="lfk-kv"><span>Fim das 6 semanas da mãe</span><span id="lp-r-mae"></span></div>' +
+      '<div class="lfk-kv"><span>Pai: primeiros 7 dias até</span><span id="lp-r-pai7"></span></div>' +
+      '<div class="lfk-kv"><span>Pai: outros 21 dias até</span><span id="lp-r-pai28"></span></div>' +
       '<p class="lfk-summary" style="margin-top:1.5rem" id="lp-r-frase"></p>' +
       '<div id="lp-r-alerta"></div>' +
       '</div>' +
       '<div class="lfk-card" style="margin-top:1.5rem">' +
       '<div class="lfk-card-head"><div class="lfk-h-sm">Quanto recebes em cada opção</div></div>' +
-      '<div class="lfk-table-wrap"><table class="lfk-table is-dark"><thead><tr><th>Opção</th><th>Termina a</th><th>Mãe por mês</th><th>Pai por mês</th></tr></thead><tbody id="lp-r-tabela"></tbody></table></div>' +
+      '<div class="lfk-table-wrap"><table class="lfk-table is-dark"><thead><tr><th>Opção</th><th>Mãe por mês</th><th>Pai por mês</th></tr></thead><tbody id="lp-r-tabela"></tbody></table></div>' +
       '<p class="lfk-table-note" id="lp-r-nota"></p>' +
       '</div></div>' +
       '<div class="lfk-empty" id="lp-placeholder"><p>Preenche os dados e clica em <b>Calcular</b> para veres as datas e os valores.</p></div>' +
@@ -120,13 +122,12 @@
 
     var linhas = '';
     r.opcoes.forEach(function (x) {
-      linhas += '<tr><td>' + x.dias + ' dias a ' + pct(x.p) + '<br><span class="lfk-small lfk-muted">' + x.cond + '</span></td>' +
-        '<td class="is-num">' + dtxt(x.fim) + '</td>' +
-        '<td class="is-num">' + (x.mae === null ? '-' : f(x.mae)) + '</td>' +
-        '<td class="is-num">' + (x.pai === null ? '-' : f(x.pai)) + '</td></tr>';
+      linhas += '<tr><td style="white-space:normal"><b>' + x.dias + ' dias a ' + pct(x.p) + '</b><br><span class="lfk-small lfk-muted">' + x.cond + '. Termina a ' + dtxt(x.fim) + '.</span></td>' +
+        '<td class="is-num">' + (x.mae === null ? '-' : eur(x.mae)) + '</td>' +
+        '<td class="is-num">' + (x.pai === null ? '-' : eur(x.pai)) + '</td></tr>';
     });
     el('lp-r-tabela').innerHTML = linhas;
-    el('lp-r-nota').textContent = 'Valores por mês de 30 dias, sem IRS nem descontos para a Segurança Social. Nos 28 dias obrigatórios e nos 7 opcionais, o pai recebe sempre 100%' + (r.paiCem !== null ? ' (' + f(r.paiCem) + ' por mês)' : '') + '. Cada um recebe só nos dias em que está de licença.' + (r.extra ? ' Inclui mais ' + r.extra + ' dias por gémeos.' : '');
+    el('lp-r-nota').textContent = 'Valores arredondados ao euro, por mês de 30 dias, sem IRS nem descontos para a Segurança Social. Nos 28 dias obrigatórios e nos 7 opcionais, o pai recebe sempre 100%' + (r.paiCem !== null ? ' (' + f(r.paiCem) + ' por mês)' : '') + '. Cada um recebe só nos dias em que está de licença.' + (r.extra ? ' Inclui mais ' + r.extra + ' dias por gémeos.' : '');
 
     var base = r.opcoes[0], melhor = r.opcoes[2];
     var frase = r.novo
@@ -135,7 +136,7 @@
     el('lp-r-frase').textContent = frase;
 
     var alerta = '';
-    if (r.novo) alerta += '<div class="lfk-alert" style="margin-top:1rem">As regras novas foram aprovadas pelo Parlamento a 16 de outubro de 2026, para licenças que comecem a partir de 1 de janeiro de 2027. Ainda falta a promulgação e a publicação em Diário da República.</div>';
+    if (r.novo) alerta += '<div class="lfk-alert" style="margin-top:1rem">As regras novas foram aprovadas pelo Parlamento a 16 de outubro de 2026, para licenças que comecem a partir de 1 de janeiro de 2027. Ainda faltam a promulgação e a publicação em Diário da República.</div>';
     else if (o.parto >= D2027) alerta += '<div class="lfk-alert is-warn" style="margin-top:1rem">O parto é em 2027, mas a licença começa em 2026 por causa dos dias antes do parto. Ficas com as regras atuais até ao fim. Se a licença começar a 1 de janeiro de 2027 ou depois, passam a aplicar-se as regras novas, com mais 30 dias pagos a 100%.</div>';
     else if (r.inicio >= Date.UTC(2026, 9, 1)) alerta += '<div class="lfk-alert" style="margin-top:1rem">Licenças que começam até 31 de dezembro de 2026 ficam com as regras atuais até ao fim, mesmo que continuem em 2027. A lei nova não tem regra de transição.</div>';
     if ((o.mae > 0 && o.mae / 30 * 0.8 < MIN_DIA) || (o.pai > 0 && o.pai / 30 * 0.8 < MIN_DIA)) alerta += '<div class="lfk-alert" style="margin-top:1rem">O subsídio não pode ser inferior a ' + f(MIN_DIA) + ' por dia (80% de 1/30 do IAS de 2026), por isso nalgumas opções aplicámos esse mínimo.</div>';
