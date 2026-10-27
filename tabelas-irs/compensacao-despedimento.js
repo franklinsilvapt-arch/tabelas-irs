@@ -168,6 +168,7 @@
     if (o.motivo === 'termo' && !r.aplicavel) alerta = '<div class="lfk-alert is-warn" style="margin-top:1rem">Contratos a termo assinados antes de outubro de 2013 têm regras de transição próprias. Confirma o valor com o simulador da ACT ou com um advogado.</div>';
     else if (o.motivo === 'termo') alerta = '<div class="lfk-alert" style="margin-top:1rem">Se foste tu a comunicar que não querias renovar o contrato, não há compensação.</div>';
     else if (o.ini < D2013) alerta = '<div class="lfk-alert" style="margin-top:1rem">Para contratos anteriores a outubro de 2013, aplicámos os 14 dias desde maio de 2023, que é a leitura mais comum da lei. Há quem defenda 12 dias, por isso confirma o valor com a empresa ou com a ACT.</div>';
+    if (new Date(o.fim).getUTCFullYear() > 2026 && (sal > 20 * RMMG || r.regra === 'teto')) alerta += '<div class="lfk-alert" style="margin-top:1rem">Os limites usam o salário mínimo do ano em que o contrato acaba. Para 2027 ainda não foi publicado, por isso usámos o de 2026 (920€).</div>';
     el('cd-r-alerta').innerHTML = alerta;
 
     var passos = kv('Base de cálculo por mês', f(r.Bc) + (r.Bc < sal ? ' (teto de 20 salários mínimos)' : ''));
