@@ -60,8 +60,9 @@
       '</div></div>' +
       '<button type="button" class="lfk-btn is-block" id="sn-calcular">Calcular</button>' +
       '</form></div></div>' +
-      '<div class="lfk-calc-results"><div class="lfk-empty" id="sn-placeholder"><p>Preenche os dados e clica em <b>Calcular</b> para veres os resultados.</p></div></div>' +
-      '<div class="lfk-calc-results" id="sn-resultados" hidden>' +
+      /* Um so contentor de resultados: o espaco entre cartoes e o gap de 1.5rem do kit, mesmo com o placeholder escondido */
+      '<div class="lfk-calc-results" id="sn-area">' +
+      '<div id="sn-resultados" hidden>' +
       '<div class="lfk-card">' +
       '<div class="lfk-card-head"><h2 class="lfk-h-sm">Resultados</h2></div>' +
       '<div class="lfk-kv is-total"><span id="sn-r-titulo">Subsídio de Natal líquido</span><span id="sn-r-liquido">0,00€</span></div>' +
@@ -72,6 +73,8 @@
       '<p class="lfk-summary" style="margin-top:1.5rem" id="sn-r-frase"></p>' +
       '<div id="sn-r-alerta"></div>' +
       '</div></div>' +
+      '<div class="lfk-empty" id="sn-placeholder"><p>Preenche os dados e clica em <b>Calcular</b> para veres os resultados.</p></div>' +
+      '</div>' +
       '</div>';
   }
 
@@ -155,6 +158,9 @@
     if (LFK.selects) LFK.selects(root);
     /* O site usa o Lenis (scroll suave), que apanha a roda do rato e impede o scroll dentro das listas: data-lenis-prevent devolve o scroll nativo a cada lista */
     Array.prototype.forEach.call(root.querySelectorAll('.lfk-dd-list'), function (l) { l.setAttribute('data-lenis-prevent', ''); });
+    /* Banner da XTB (componente nativo do Webflow, #sn-pub): antes do calculo fica entre o formulario e o placeholder, depois fica a seguir aos resultados, como no simulador de salario liquido */
+    var pub = el('sn-pub'), area = el('sn-area');
+    if (pub && area) { pub.style.marginTop = '0'; area.insertBefore(pub, el('sn-placeholder')); }
     if (LFK.numInputs) LFK.numInputs(root);
     if (LFK.theme) LFK.theme(root);
     root.addEventListener('change', function (e) { if (e.target && e.target.name === 'duo') atualizarMes(); });
