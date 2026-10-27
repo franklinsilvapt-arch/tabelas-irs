@@ -48,7 +48,7 @@
       '<label class="lfk-radio"><input type="radio" name="motivo" value="col" checked> <span>Despedimento coletivo, extinção do posto ou inadaptação</span></label>' +
       '<label class="lfk-radio"><input type="radio" name="motivo" value="termo"> <span>Fim de contrato a termo</span></label>' +
       '</div></div>' +
-      '<div class="lfk-field"><label class="lfk-label" for="cd-salario">Salário base mais diuturnidades por mês' + ajuda('A retribuição base mensal bruta, mais as diuturnidades se as tiveres. Não incluas subsídio de refeição, prémios nem horas extra.') + '</label>' +
+      '<div class="lfk-field"><label class="lfk-label" for="cd-salario">Salário base mais diuturnidades por mês' + ajuda('A retribuição base mensal bruta, mais as diuturnidades se as tiveres. As diuturnidades são um valor fixo que se soma ao salário por cada período de antiguidade na empresa (por exemplo, a cada 3 ou 5 anos). Só existem se o contrato ou a convenção coletiva as preverem e aparecem à parte no recibo de vencimento. Não incluas subsídio de refeição, prémios nem horas extra.') + '</label>' +
       '<div class="lfk-input-wrap"><input class="lfk-input lfk-num" id="cd-salario" name="salario" inputmode="decimal" value="1.500"><span class="lfk-unit">€</span></div></div>' +
       '<div class="lfk-field"><label class="lfk-label" for="cd-inicio">Início do contrato</label>' +
       '<input class="lfk-input" type="date" id="cd-inicio" name="inicio" value="2018-03-01" min="1960-01-01" max="' + hoje + '"></div>' +
