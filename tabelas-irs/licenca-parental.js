@@ -79,7 +79,7 @@
       '</div>' +
       '<div class="lfk-card" style="margin-top:1.5rem">' +
       '<div class="lfk-card-head"><div class="lfk-h-sm">Quanto recebes em cada opção</div></div>' +
-      '<div class="lfk-table-wrap"><table class="lfk-table"><thead><tr><th>Opção</th><th>Termina a</th><th>Mãe por mês</th><th>Pai por mês</th></tr></thead><tbody id="lp-r-tabela"></tbody></table></div>' +
+      '<div class="lfk-table-wrap"><table class="lfk-table is-dark"><thead><tr><th>Opção</th><th>Termina a</th><th>Mãe por mês</th><th>Pai por mês</th></tr></thead><tbody id="lp-r-tabela"></tbody></table></div>' +
       '<p class="lfk-table-note" id="lp-r-nota"></p>' +
       '</div></div>' +
       '<div class="lfk-empty" id="lp-placeholder"><p>Preenche os dados e clica em <b>Calcular</b> para veres as datas e os valores.</p></div>' +
