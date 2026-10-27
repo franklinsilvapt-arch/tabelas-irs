@@ -127,7 +127,7 @@
         '<td class="is-num" style="min-width:0">' + (x.pai === null ? '-' : eur(x.pai)) + '</td></tr>';
     });
     el('lp-r-tabela').innerHTML = linhas;
-    el('lp-r-nota').textContent = 'Valores arredondados ao euro, por mês de 30 dias, sem IRS nem descontos para a Segurança Social. Nos 28 dias obrigatórios e nos 7 opcionais, o pai recebe sempre 100%' + (r.paiCem !== null ? ' (' + f(r.paiCem) + ' por mês)' : '') + '. Cada um recebe só nos dias em que está de licença.' + (r.extra ? ' Inclui mais ' + r.extra + ' dias por gémeos.' : '');
+    el('lp-r-nota').textContent = 'Valores arredondados ao euro, por mês de 30 dias, sem IRS nem descontos para a Segurança Social. Nos 28 dias obrigatórios e nos 7 opcionais, o pai recebe sempre 100%' + (r.paiCem !== null ? ' (' + eur(r.paiCem) + ' por mês)' : '') + '. Cada um recebe só nos dias em que está de licença.' + (r.extra ? ' Inclui mais ' + r.extra + ' dias por gémeos.' : '');
 
     var base = r.opcoes[0], melhor = r.opcoes[2];
     var frase = r.novo
