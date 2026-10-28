@@ -251,10 +251,18 @@
 
   /* O tabelas-irs.js desenha o conteudo dele em #lf-dp (escondido). O motor do subsidio nao precisa desse HTML,
      por isso limpa-se para nao deixar na pagina links escondidos de outra ferramenta. */
-  function limparSink() { var s = el('lf-dp'); if (s && s.firstChild) s.innerHTML = ''; }
+  function limparSink() {
+    var s = el('lf-dp');
+    if (!s) return;
+    if (s.firstChild) s.innerHTML = '';
+    if (!s.__lfObs && window.MutationObserver) {
+      s.__lfObs = new MutationObserver(function () { if (s.firstChild) s.innerHTML = ''; });
+      s.__lfObs.observe(s, { childList: true });
+    }
+  }
 
   function iniciar() {
-    if (window.LFK && LFK.calc) { montar(); limparSink(); window.addEventListener('load', limparSink); }
+    if (window.LFK && LFK.calc) { montar(); limparSink(); }
     else setTimeout(iniciar, 50);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar); else iniciar();
