@@ -84,8 +84,8 @@
       '</div>' +
       '<div class="lfk-card" style="margin-top:1.5rem" id="fe-sd-card" hidden>' +
       '<div class="lfk-card-head"><h2 class="lfk-h-sm">Se perderes o emprego</h2></div>' +
-      '<div class="lfk-kv"><span>Subsídio de desemprego estimado</span><span id="fe-r-sd">0,00€</span></div>' +
-      '<div class="lfk-kv"><span>Despesas que o fundo tem de pagar</span><span id="fe-r-gap">0,00€</span></div>' +
+      '<div class="lfk-kv"><span>Subsídio estimado por mês</span><span id="fe-r-sd">0,00€</span></div>' +
+      '<div class="lfk-kv"><span>O fundo paga por mês</span><span id="fe-r-gap">0,00€</span></div>' +
       '<div class="lfk-kv"><span>O fundo recomendado dá para</span><span id="fe-r-dura"></span></div>' +
       '<p class="lfk-summary" style="margin-top:1.5rem" id="fe-r-sd-frase"></p>' +
       '</div>' +
@@ -219,8 +219,8 @@
     if (sd !== null && sd > 0) {
       sdCard.hidden = false;
       var gap = c(Math.max(0, o.despesas - sd));
-      el('fe-r-sd').textContent = f(sd) + ' por mês';
-      el('fe-r-gap').textContent = f(gap) + ' por mês';
+      el('fe-r-sd').textContent = f(sd);
+      el('fe-r-gap').textContent = f(gap);
       var dura = gap > 0 ? Math.floor(r.alvo / gap) : null;
       el('fe-r-dura').textContent = dura === null ? 'Sem limite' : nMeses(dura);
       var fs;
