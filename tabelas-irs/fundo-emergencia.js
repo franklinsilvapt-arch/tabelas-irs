@@ -2,10 +2,11 @@
    Usa o LF kit (pedrofintech/lf-site-assets, kit/). Para a estimativa opcional do subsidio de desemprego usa o
    motor do subsidio-desemprego.js e do tabelas-irs.js (mesmo repositorio), carregados na mesma pagina.
    Regras:
-   - Referencia: o Banco de Portugal recomenda um fundo de emergencia de 4 a 6 meses de despesas mensais
-     (fixas e variaveis).
+   - Referencia: o Banco de Portugal recomenda um fundo de emergencia de, no minimo, 4 a 6 meses de despesas
+     mensais totais (fixas e variaveis), e um periodo mais alargado para quem trabalha por conta propria
+     (bportugal.pt/page/dia-mundial-do-ambiente-siga-estas-dicas-e-faca-um-orcamento-prova-de-imprevistos).
    - Meses recomendados (metodologia do Literacia Financeira, explicada no glossario da pagina):
-     base 4 (contrato sem termo, funcao publica ou reforma), 5 (contrato a termo), 6 (independente),
+     base 4 (contrato sem termo, funcao publica ou reforma), 5 (contrato a termo), 7 (independente),
      mais 1 mes com um so rendimento no agregado e mais 1 mes com pessoas a cargo.
    - Tempo ate ao objetivo: (objetivo - ja poupado) / (poupanca mensal + reforcos anuais / 12), arredondado
      para cima. Nao conta juros.
@@ -16,7 +17,7 @@
   if (window.__lfFeInit) return;
   window.__lfFeInit = true;
 
-  var BASE = { sem: 4, ref: 4, termo: 5, ind: 6 };
+  var BASE = { sem: 4, ref: 4, termo: 5, ind: 7 };
   var MAX_MESES_GRAFICO = 120;
   var MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
   var MESES_C = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
@@ -76,10 +77,11 @@
       '<div class="lfk-kv"><span id="fe-r-falta-l">Falta juntar</span><span id="fe-r-falta">0,00€</span></div>' +
       '<div class="lfk-kv"><span>Tempo até lá chegar</span><span id="fe-r-tempo"></span></div>' +
       '<div style="margin-top:1.5rem">' +
-      '<div class="lfk-zones" id="fe-zonas" data-max="100" data-zones="40:Início:err,80:A caminho:warn,100:Quase completo:ok"></div>' +
-      '<div class="lfk-zones-result"><span>Já tens <span id="fe-r-pct"></span> do fundo</span><span id="fe-r-pct-w"></span></div>' +
+      '<div class="lfk-zones" id="fe-zonas" data-max="100" data-zones="40:Menos de 40%:err,80:Entre 40% e 80%:warn,100:Mais de 80%:ok"></div>' +
+      '<div class="lfk-zones-result"><span>Já tens <span id="fe-r-pct"></span> do fundo recomendado</span></div>' +
       '</div>' +
       '<p class="lfk-summary" style="margin-top:1.5rem" id="fe-r-frase"></p>' +
+      '<p class="lfk-summary" style="margin-top:1rem">Guarda o fundo numa <a class="lfk-link" href="/artigos/melhores-contas-poupanca">conta poupança</a> ou num <a class="lfk-link" href="/comparador-depositos-a-prazo">depósito a prazo</a> que possas mobilizar a qualquer momento, sem perder capital.</p>' +
       '<div id="fe-r-alerta"></div>' +
       '</div>' +
       '<div class="lfk-card" style="margin-top:1.5rem" id="fe-sd-card" hidden>' +
@@ -97,14 +99,6 @@
       '</div>' +
       '<div data-lfk-view="g"><div class="lfk-chart"><canvas id="fe-grafico"></canvas></div></div>' +
       '<div data-lfk-view="t" hidden><div id="fe-tabela"></div><p class="lfk-table-note">Saldo no fim de cada mês, sem juros.</p></div>' +
-      '</div>' +
-      '<div class="lfk-card" style="margin-top:1.5rem">' +
-      '<div class="lfk-card-head"><h2 class="lfk-h-sm">Onde guardar o fundo</h2></div>' +
-      '<p class="lfk-text">Num sítio de onde possas tirar o dinheiro em poucos dias e sem perder capital, como uma conta poupança ou um depósito a prazo que possas mobilizar antes do fim. Os depósitos estão cobertos pelo Fundo de Garantia de Depósitos até 100.000€ por pessoa e por banco.</p>' +
-      '<div class="lfk-row" style="margin-top:1rem">' +
-      '<a class="lfk-link-btn" href="/comparador-depositos-a-prazo">Comparar depósitos a prazo <span class="lfk-btn is-icon"><span class="lfk-ico-arrow"></span></span></a>' +
-      '<a class="lfk-link-btn is-secondary" href="/comparador-contas-bancarias">Comparar contas bancárias <span class="lfk-btn is-icon"><span class="lfk-ico-arrow"></span></span></a>' +
-      '</div>' +
       '</div>' +
       '</div>' +
       '<div class="lfk-empty" id="fe-placeholder"><p>Preenche os dados e clica em <b>Calcular</b> para veres os resultados.</p></div>' +
@@ -195,8 +189,7 @@
 
     var z = LFK.zones('#fe-zonas', Math.round(r.pct));
     var tone = 'is-' + (z && z.tone ? z.tone : 'ok');
-    var w = el('fe-r-pct-w'), p = el('fe-r-pct');
-    w.textContent = r.pct >= 100 ? 'Completo' : (z && z.label ? z.label : ''); w.className = tone;
+    var p = el('fe-r-pct');
     p.textContent = pctTxt(r.pct); p.className = tone;
 
     var perfil = descSit(o.sit) + (o.rend === 1 ? ', um só rendimento' : ', dois ou mais rendimentos') + (o.dep ? ' e pessoas a cargo' : ' e sem pessoas a cargo');
@@ -208,7 +201,7 @@
 
     var alerta = '';
     if (r.sobra > 0) alerta = '<div class="lfk-alert is-ok" style="margin-top:1rem">O fundo está completo e sobram ' + f0(r.sobra) + '. Esse dinheiro pode ir para objetivos de prazo mais longo. Vê o <a class="lfk-link" href="/comparador-de-corretoras">comparador de corretoras</a> se quiseres começar a investir.</div>';
-    else if (r.tempo === null) alerta = '<div class="lfk-alert is-warn" style="margin-top:1rem">Sem poupança mensal nem reforços, o fundo não cresce. O <a class="lfk-link" href="/simulador-orcamento-familiar">simulador de orçamento familiar</a> ajuda-te a ver onde podes cortar.</div>';
+    else if (r.tempo === null) alerta = '<div class="lfk-alert is-warn" style="margin-top:1rem">Sem poupança mensal nem reforços, o fundo não cresce. Revê o orçamento para veres onde podes cortar.</div>';
     else if (r.tempo > MAX_MESES_GRAFICO) alerta = '<div class="lfk-alert is-warn" style="margin-top:1rem">A este ritmo demoras mais de 10 anos. Começa por um primeiro objetivo de um mês de despesas (' + f0(o.despesas) + ') e aumenta a poupança quando puderes.</div>';
     el('fe-r-alerta').innerHTML = alerta;
 
@@ -227,10 +220,14 @@
       if (gap === 0) fs = 'O subsídio estimado cobre as despesas que indicaste. O fundo serve para outros imprevistos e para o tempo até ao primeiro pagamento.';
       else fs = 'Sem o subsídio, o fundo recomendado paga ' + nMeses(r.meses) + ' de despesas. Com o subsídio a pagar ' + f0(sd) + ' por mês, o fundo só tem de cobrir ' + f0(gap) + ' e dá para ' + nMeses(dura) + '.';
       fs += ' Estimativa com 24 meses ou mais de descontos, morada no continente e não casado. Para o cálculo completo usa o simulador de subsídio de desemprego.';
-      el('fe-r-sd-frase').innerHTML = fs.replace('simulador de subsídio de desemprego', '<a class="lfk-link" href="/simulador-subsidio-de-desemprego">simulador de subsídio de desemprego</a>');
+      el('fe-r-sd-frase').textContent = fs;
     } else sdCard.hidden = true;
 
     grafico(r);
+
+    /* Depois do clique, o banner fica logo a seguir ao cartao Resultados */
+    var pub = el('fe-pub'), primeiro = el('fe-resultados').firstElementChild;
+    if (pub && primeiro && primeiro.nextElementSibling !== pub) { primeiro.parentNode.insertBefore(pub, primeiro.nextElementSibling); pub.style.marginTop = '1.5rem'; }
   }
 
   function montar() {
