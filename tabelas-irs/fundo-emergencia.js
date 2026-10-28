@@ -76,8 +76,8 @@
       '<div class="lfk-kv"><span id="fe-r-falta-l">Falta juntar</span><span id="fe-r-falta">0,00€</span></div>' +
       '<div class="lfk-kv"><span>Tempo até lá chegar</span><span id="fe-r-tempo"></span></div>' +
       '<div style="margin-top:1.5rem">' +
-      '<div class="lfk-zones" id="fe-zonas" data-max="100" data-zones="50:Início:err,99:A caminho:warn,100:Completo:ok"></div>' +
-      '<div class="lfk-zones-result"><span>Já tens <span id="fe-r-pct-w"></span> do fundo</span><span id="fe-r-pct"></span></div>' +
+      '<div class="lfk-zones" id="fe-zonas" data-max="100" data-zones="40:Início:err,80:A caminho:warn,100:Quase completo:ok"></div>' +
+      '<div class="lfk-zones-result"><span>Já tens <span id="fe-r-pct"></span> do fundo</span><span id="fe-r-pct-w"></span></div>' +
       '</div>' +
       '<p class="lfk-summary" style="margin-top:1.5rem" id="fe-r-frase"></p>' +
       '<div id="fe-r-alerta"></div>' +
@@ -196,7 +196,7 @@
     var z = LFK.zones('#fe-zonas', Math.round(r.pct));
     var tone = 'is-' + (z && z.tone ? z.tone : 'ok');
     var w = el('fe-r-pct-w'), p = el('fe-r-pct');
-    w.textContent = pctTxt(r.pct); w.className = tone;
+    w.textContent = r.pct >= 100 ? 'Completo' : (z && z.label ? z.label : ''); w.className = tone;
     p.textContent = pctTxt(r.pct); p.className = tone;
 
     var perfil = descSit(o.sit) + (o.rend === 1 ? ', um só rendimento' : ', dois ou mais rendimentos') + (o.dep ? ' e pessoas a cargo' : ' e sem pessoas a cargo');
