@@ -66,7 +66,7 @@
       '<div id="csi-r-alerta"></div>' +
       '</div>' +
       '<div class="lfk-card" style="margin-top:1.5rem">' +
-      '<div class="lfk-card-head"><div class="lfk-h-sm">Como é calculado</div></div>' +
+      '<div class="lfk-card-head"><div class="lfk-h-sm">Como é calculado, por ano</div></div>' +
       '<div id="csi-r-passos"></div>' +
       '</div></div>' +
       '<div class="lfk-empty" id="csi-placeholder"><p>Preenche os dados e clica em <b>Calcular</b> para veres se tens direito e quanto recebes.</p></div>' +
@@ -118,14 +118,12 @@
     var linhas = '';
     if (r.c2 === null) {
       linhas += '<div class="lfk-kv is-total"><span>Complemento por mês</span><span>' + f(r.m1) + '</span></div>';
-      linhas += kv('Complemento por ano', f(r.c1));
+      linhas += kv('Por ano', f(r.c1));
     } else {
-      linhas += '<div class="lfk-kv is-total"><span>Complemento do casal por mês</span><span>' + f(c(r.m1 + r.m2)) + '</span></div>';
-      linhas += kv('Para ti', f(r.m1) + ' por mês');
-      linhas += kv('Para o cônjuge', f(r.m2) + ' por mês');
+      linhas += '<div class="lfk-kv is-total"><span>Casal, por mês</span><span>' + f(c(r.m1 + r.m2)) + '</span></div>';
+      linhas += kv('Para ti, por mês', f(r.m1));
+      linhas += kv('Para o cônjuge, por mês', f(r.m2));
     }
-    linhas += kv(r.casal ? 'Rendimentos do casal considerados' : 'Rendimentos considerados', f(r.total) + ' por ano');
-    linhas += kv(r.casal ? 'Limite do casal' : 'Limite', f(r.casal ? r.VRc : r.VR) + ' por ano');
     el('csi-r-linhas').innerHTML = linhas;
 
     var temDireito = r.c1 > 0 || (r.c2 || 0) > 0;
@@ -148,14 +146,14 @@
     el('csi-r-alerta').innerHTML = alerta;
 
     var comum = c(o.outros + 0.05 * o.poup + 0.05 * o.imo);
-    var passos = kv('Pensão por ano (14 pagamentos)', f(c(o.p1 * 14)));
-    if (r.casal) passos += kv('Pensão do cônjuge por ano', f(c(o.p2 * 14)));
+    var passos = kv('Pensão (14 meses)', f(c(o.p1 * 14)));
+    if (r.casal) passos += kv('Pensão do cônjuge', f(c(o.p2 * 14)));
     if (o.outros) passos += kv('Outros rendimentos', f(o.outros));
-    if (o.poup) passos += kv('5% das poupanças e investimentos', f(c(0.05 * o.poup)));
-    if (o.imo) passos += kv('5% dos outros imóveis', f(c(0.05 * o.imo)));
+    if (o.poup) passos += kv('5% das poupanças', f(c(0.05 * o.poup)));
+    if (o.imo) passos += kv('5% dos imóveis', f(c(0.05 * o.imo)));
     passos += kv('Total de rendimentos', f(r.total));
-    passos += kv('Limite (valor de referência)' + (r.casal ? ' por pessoa' : ''), f(r.VR));
-    if (r.casal) passos += kv('Limite do casal (1,75 x)', f(r.VRc));
+    passos += kv(r.casal ? 'Limite por pessoa' : 'Limite', f(r.VR));
+    if (r.casal) passos += kv('Limite do casal', f(r.VRc));
     el('csi-r-passos').innerHTML = passos + (r.casal && comum ? '<p class="lfk-table-note">Os rendimentos comuns e o património do casal foram repartidos em partes iguais.</p>' : '');
   }
 
