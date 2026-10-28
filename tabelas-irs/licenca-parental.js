@@ -13,6 +13,7 @@
    Regras para licencas que comecam a partir de 1/1/2027 (texto aprovado na votacao final global a 16/10/2026,
    ainda sem publicacao em Diario da Republica): 150 dias a 100% com ou sem partilha; 180 dias a 100% com partilha
    ou a 83% sem partilha; 210 dias a 86% com partilha ou a 90% se o pai gozar 60 dias seguidos ou 2 x 30.
+   O pai passa a ter 14 dias seguidos a seguir ao nascimento (em vez de 7), dentro dos mesmos 28 obrigatorios.
    Sem regra transitoria: licencas iniciadas ate 31/12/2026 ficam com as regras atuais. */
 (function () {
   'use strict';
@@ -74,8 +75,8 @@
       '<div class="lfk-kv"><span>Regras que se aplicam</span><span id="lp-r-regras"></span></div>' +
       '<div class="lfk-kv"><span>Início da licença</span><span id="lp-r-inicio"></span></div>' +
       '<div class="lfk-kv"><span>Mãe: 6 semanas até</span><span id="lp-r-mae"></span></div>' +
-      '<div class="lfk-kv"><span>Pai: primeiros 7 dias até</span><span id="lp-r-pai7"></span></div>' +
-      '<div class="lfk-kv"><span>Pai: outros 21 dias até</span><span id="lp-r-pai28"></span></div>' +
+      '<div class="lfk-kv"><span id="lp-r-pai7l">Pai: primeiros 7 dias até</span><span id="lp-r-pai7"></span></div>' +
+      '<div class="lfk-kv"><span id="lp-r-pai28l">Pai: outros 21 dias até</span><span id="lp-r-pai28"></span></div>' +
       '<p class="lfk-summary" style="margin-top:1.5rem" id="lp-r-frase"></p>' +
       '<div id="lp-r-alerta"></div>' +
       '</div>' +
@@ -100,7 +101,7 @@
       return { nome: x.nome, cond: x.cond, dias: dias, p: x.p, fim: inicio + (dias - 1) * DIA, mae: mensal(o.mae, x.p), pai: mensal(o.pai, x.p) };
     });
     return {
-      novo: novo, inicio: inicio, fimMae: o.parto + 41 * DIA, fimPai7: o.parto + 6 * DIA, fimPai28: o.parto + 41 * DIA,
+      novo: novo, inicio: inicio, fimMae: o.parto + 41 * DIA, paiSeguidos: novo ? 14 : 7, fimPai7: o.parto + ((novo ? 14 : 7) - 1) * DIA, fimPai28: o.parto + 41 * DIA,
       opcoes: opcoes, paiCem: mensal(o.pai, 1), extra: extra
     };
   }
@@ -117,6 +118,8 @@
     el('lp-r-regras').textContent = r.novo ? 'Novas (2027)' : 'Atuais';
     el('lp-r-inicio').textContent = dtxt(r.inicio);
     el('lp-r-mae').textContent = dtxt(r.fimMae);
+    el('lp-r-pai7l').textContent = 'Pai: primeiros ' + r.paiSeguidos + ' dias até';
+    el('lp-r-pai28l').textContent = 'Pai: outros ' + (28 - r.paiSeguidos) + ' dias até';
     el('lp-r-pai7').textContent = dtxt(r.fimPai7);
     el('lp-r-pai28').textContent = dtxt(r.fimPai28);
 
