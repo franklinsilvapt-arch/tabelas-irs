@@ -49,7 +49,7 @@
       '<div class="lfk-input-wrap"><input class="lfk-input lfk-num" id="csi-p1" inputmode="decimal" value="400"><span class="lfk-unit">€</span></div></div>' +
       '<div class="lfk-field" id="csi-p2-f" hidden><label class="lfk-label" for="csi-p2">Pensão bruta do cônjuge por mês</label>' +
       '<div class="lfk-input-wrap"><input class="lfk-input lfk-num" id="csi-p2" inputmode="decimal" value="400"><span class="lfk-unit">€</span></div></div>' +
-      '<div class="lfk-field"><label class="lfk-label" for="csi-outros" id="csi-outros-l">Outros rendimentos por ano' + ajuda('Trabalho, rendas de casas, outras prestações sociais e dinheiro que recebas regularmente de outras pessoas, por exemplo dos filhos. Valor bruto do ano passado.') + '</label>' +
+      '<div class="lfk-field"><label class="lfk-label" for="csi-outros" id="csi-outros-l">Outros rendimentos por ano' + ajuda('Trabalho, rendas de casas, outras prestações sociais, heranças, dinheiro de vendas de bens e dinheiro que recebas de outras pessoas, por exemplo dos filhos. Valor bruto do ano passado.') + '</label>' +
       '<div class="lfk-input-wrap"><input class="lfk-input lfk-num" id="csi-outros" inputmode="decimal" value="0"><span class="lfk-unit">€</span></div></div>' +
       '<div class="lfk-field"><label class="lfk-label" for="csi-poup">Poupanças e investimentos' + ajuda('Depósitos, certificados de aforro, ações, fundos e outras aplicações a 31 de dezembro do ano passado. A Segurança Social conta 5% deste valor como rendimento.') + '</label>' +
       '<div class="lfk-input-wrap"><input class="lfk-input lfk-num" id="csi-poup" inputmode="decimal" value="0"><span class="lfk-unit">€</span></div></div>' +
