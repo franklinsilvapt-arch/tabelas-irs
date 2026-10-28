@@ -140,7 +140,7 @@
     el('csi-r-frase').textContent = frase;
 
     var alerta = '';
-    if (temDireito) alerta += '<div class="lfk-alert" style="margin-top:1rem">Quem recebe o complemento tem também medicamentos comparticipados gratuitos e apoio para óculos, próteses dentárias e dentista. É preciso ter a idade normal de reforma (' + (+el('csi-ano').value === 2027 ? '66 anos e 11 meses em 2027' : '66 anos e 9 meses em 2026') + ') e viver em Portugal há pelo menos 6 anos.</div>';
+    if (temDireito) alerta += '<div class="lfk-alert" style="margin-top:1rem">Quem recebe o complemento tem também medicamentos comparticipados gratuitos e apoio para óculos e próteses dentárias. É preciso ter a idade normal de reforma (' + (+el('csi-ano').value === 2027 ? '66 anos e 11 meses em 2027' : '66 anos e 9 meses em 2026') + ') e viver em Portugal há pelo menos 6 anos.</div>';
     if (o.ano === 2027) alerta += '<div class="lfk-alert is-warn" style="margin-top:1rem">O valor de 2027 (720€ por mês) foi anunciado pelo Governo para o Orçamento do Estado de 2027 e ainda pode mudar até ser publicado.</div>';
     if (r.modo === 'ambos-1' || r.modo === 'ambos-2') alerta += '<div class="lfk-alert" style="margin-top:1rem">Um de vocês tem rendimentos acima de ' + f(r.VR) + ' por ano e não pode pedir. Só o outro recebe o complemento.</div>';
     el('csi-r-alerta').innerHTML = alerta;
