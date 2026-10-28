@@ -131,11 +131,11 @@
     else if (r.moveis) frase = 'Não tens direito à PSU: o valor dos carros e outros bens registados passa 60 vezes o IAS (' + f(c(60 * IAS)) + ').';
     else if (r.rendimentos) frase = 'Não tens direito à PSU: os rendimentos da casa (' + f(r.R) + ' por mês) não ficam abaixo do montante base, de ' + f(r.base) + ' por mês para a tua casa.';
     else if (r.minimo) frase = 'A conta dá menos de 10€ por mês e, abaixo desse valor, a PSU não é paga.';
-    else frase = 'Tens direito a cerca de ' + f(r.psu) + ' por mês. É o montante base da tua casa mais o incentivo ao trabalho, menos os rendimentos' + (r.maj ? ', com a majoração somada no fim.' : '.');
+    else frase = 'Tens direito a cerca de ' + f(r.psu) + ' por mês. É o montante base da tua casa' + (r.W ? ' mais o incentivo ao trabalho' : '') + (r.R ? ', menos os rendimentos' : '') + (r.maj ? ', com a majoração somada no fim.' : '.');
     el('psu-r-frase').textContent = frase;
 
     var alerta = '<div class="lfk-alert is-warn" style="margin-top:1rem">Valores com o IAS de 2026 (537,13€). A PSU começa a 31 de dezembro de 2026 e, em 2027, os valores sobem com o novo IAS, publicado no fim de dezembro.</div>';
-    if (r.cap) alerta += '<div class="lfk-alert" style="margin-top:1rem">Como as poupanças passam 15 vezes o IAS (' + f(c(15 * IAS)) + '), contam juros de pelo menos 4,2% ao ano, mesmo que recebas menos. A taxa oficial é a Euribor a 12 meses do fim de dezembro mais 1 ponto.</div>';
+    if (r.cap && !r.patrimonio && !r.moveis) alerta += '<div class="lfk-alert" style="margin-top:1rem">Como as poupanças passam 15 vezes o IAS (' + f(c(15 * IAS)) + '), contamos juros de 4,2% ao ano, mesmo que recebas menos. É a Euribor a 12 meses de hoje mais 1 ponto. A taxa oficial é a do fim de dezembro, com um mínimo de 3%.</div>';
     if (r.direito && !r.minimo && r.W + r.P + r.O + r.cap + r.imo < r.base) {
       if (o.maj === 'desemprego' && !r.maj) alerta += '<div class="lfk-alert" style="margin-top:1rem">A majoração por desemprego não se aplica porque a PSU já chega a 80% do IAS (' + f(c(0.8 * IAS)) + ').</div>';
       if (o.maj === 'desemprego' && r.maj) alerta += '<div class="lfk-alert" style="margin-top:1rem">A majoração por desemprego só é paga nos primeiros 6 meses. Depois, a PSU volta a ' + f(r.global) + ' por mês.</div>';
@@ -151,7 +151,7 @@
     if (r.maj) passos += kv('Majoração', '+' + f(r.maj));
     passos += kv('PSU', f(r.psu));
     var nota = 'O montante base é 268,57€ (metade do IAS) vezes os adultos equivalentes: 1 por ti, 0,7 por cada outro adulto e 0,5 por cada menor.';
-    if (r.W) nota += ' No incentivo ao trabalho, os primeiros ' + f(c(0.2 * IAS)) + ' de salário contam por inteiro e o resto conta metade.';
+    if (r.W) nota += ' Com o incentivo ao trabalho, os primeiros ' + f(c(0.2 * IAS)) + ' de salário não reduzem a PSU e o resto só reduz metade.';
     el('psu-r-passos').innerHTML = passos + '<p class="lfk-table-note">' + nota + '</p>';
   }
 
