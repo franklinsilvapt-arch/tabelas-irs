@@ -249,8 +249,12 @@
     LFK.calc(el('fe-calcular'), { results: '#fe-resultados', empty: '#fe-placeholder', run: calcular });
   }
 
+  /* O tabelas-irs.js desenha o conteudo dele em #lf-dp (escondido). O motor do subsidio nao precisa desse HTML,
+     por isso limpa-se para nao deixar na pagina links escondidos de outra ferramenta. */
+  function limparSink() { var s = el('lf-dp'); if (s && s.firstChild) s.innerHTML = ''; }
+
   function iniciar() {
-    if (window.LFK && LFK.calc) montar();
+    if (window.LFK && LFK.calc) { montar(); limparSink(); window.addEventListener('load', limparSink); }
     else setTimeout(iniciar, 50);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar); else iniciar();
