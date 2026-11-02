@@ -7,16 +7,16 @@
    - IRS: retencao autonoma, a tabela aplica-se ao valor do subsidio (artigo 99.o-C, n.o 5, do CIRS). Pago em
      duodecimos ou em partes, cada pagamento leva a parte proporcional desse imposto (n.o 6).
    - Seguranca Social: 11% a cargo do trabalhador.
-   - Novembro de 2026: retencao a metade no continente (Despacho n.o 12523-A/2026) e nos Acores (Despacho
-     n.o 12610-A/2026), tambem no subsidio de Natal pago nesse mes. Ficam de fora os rendimentos mensais acima do
-     limite superior do penultimo escalao da tabela. A Madeira anunciou a 27/10/2026 uma descida propria, que so conta quando publicar as novas tabelas. */
+   - Novembro de 2026: retencao a metade no continente (Despacho n.o 12523-A/2026), nos Acores (Despacho
+     n.o 12610-A/2026) e na Madeira (Despacho n.o 434/2026, JORAM de 29/10/2026), tambem no subsidio de Natal pago
+     nesse mes. Ficam de fora os rendimentos mensais acima do limite superior do penultimo escalao da tabela. */
 (function () {
   'use strict';
   if (window.__lfSnInit) return;
   window.__lfSnInit = true;
 
   var NOV_ATIVO = new Date() < new Date(2026, 11, 1);
-  var NOV_REG = { C: 'No continente', A: 'Nos Açores' };
+  var NOV_REG = { C: 'No continente', A: 'Nos Açores', M: 'Na Madeira' };
   var SS = 0.11;
 
   function el(id) { return document.getElementById(id); }
@@ -53,7 +53,7 @@
       '<label class="lfk-radio"><input type="radio" name="duo" value="0.5"> <span>Metade em duodécimos</span></label>' +
       '<label class="lfk-radio"><input type="radio" name="duo" value="1"> <span>Todo em duodécimos</span></label>' +
       '</div></div>' +
-      '<div class="lfk-field" id="sn-mes-wrap"><span class="lfk-label">Mês em que é pago' + ajuda('Em novembro de 2026, no continente e nos Açores, a retenção de IRS é metade da normal, também no subsídio de Natal pago nesse mês.') + '</span>' +
+      '<div class="lfk-field" id="sn-mes-wrap"><span class="lfk-label">Mês em que é pago' + ajuda('Em novembro de 2026, no continente, nos Açores e na Madeira, a retenção de IRS é metade da normal, também no subsídio de Natal pago nesse mês.') + '</span>' +
       '<div class="lfk-radios">' +
       '<label class="lfk-radio"><input type="radio" name="mes" value="11" checked> <span>Novembro</span></label>' +
       '<label class="lfk-radio"><input type="radio" name="mes" value="12"> <span>Dezembro</span></label>' +
@@ -144,7 +144,6 @@
     if (NOV_ATIVO && p < 1) {
       if (novPode && irsFinalNormal > 0) alerta = '<div class="lfk-alert is-ok" style="margin-top:1rem">' + NOV_REG[reg] + ', o IRS retido em novembro de 2026 é metade do normal, também no subsídio de Natal pago nesse mês. É um adiantamento da descida do IRS de 2026: o acerto final faz-se na declaração de IRS de 2027.</div>';
       else if (acima && NOV_REG[reg]) alerta = '<div class="lfk-alert is-warn" style="margin-top:1rem">A retenção a metade de novembro não se aplica a salários acima de ' + f(limite) + ' por mês, por isso a tua retenção não muda.</div>';
-      else if (reg === 'M') alerta = '<div class="lfk-alert" style="margin-top:1rem">Na Madeira, a retenção de novembro só muda quando o Governo Regional publicar as novas tabelas de retenção. Até lá, o simulador usa as tabelas da Madeira em vigor.</div>';
     }
     el('sn-r-alerta').innerHTML = alerta;
   }
