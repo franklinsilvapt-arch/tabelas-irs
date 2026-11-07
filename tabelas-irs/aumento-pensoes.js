@@ -104,7 +104,7 @@
     } else {
       frase = 'A tua pensão está no escalão ' + NOMES[r.esc] + ' e sobe ' + pct(r.taxa) + ': mais ' + f(r.aumento) + ' por mês, a partir da pensão de janeiro.';
     }
-    frase += cga
+    if (r.esc < 4) frase += cga
       ? ' A CGA paga no dia 19 de cada mês ou no dia útil anterior, por isso o primeiro pagamento com o aumento deve chegar a 19 de janeiro.'
       : ' A Segurança Social paga as pensões no início do mês, normalmente perto do dia 8, na data do calendário de pagamentos.';
     el('pen-r-frase').textContent = frase;
