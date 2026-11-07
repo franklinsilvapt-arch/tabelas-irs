@@ -122,6 +122,10 @@
     root.innerHTML = html();
     var calcEl = root.querySelector('.lfk-calc');
     if (calcEl && root.closest('.w-richtext')) { calcEl.style.width = '100%'; calcEl.style.minWidth = '0'; }
+    // Mesmo espaço depois do simulador que o do parágrafo antes dele (o embed não tem margem própria)
+    var bloco = root.closest('[data-rt-embed-type]') || root;
+    var antes = bloco.previousElementSibling;
+    if (antes) bloco.style.marginBottom = getComputedStyle(antes).marginBottom;
     if (LFK.selects) LFK.selects(root);
     if (LFK.numInputs) LFK.numInputs(root);
     if (LFK.theme) LFK.theme(root);
