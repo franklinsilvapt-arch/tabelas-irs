@@ -36,7 +36,7 @@
 #lf-dp .irs-resumo{font-size:14px;line-height:1.65;color:#3A4454;margin:16px 0 0}
 #lf-dp .irs-resumo strong{color:#202432;font-weight:600}
 #lf-dp .irs-disc{margin:16px 0 0;padding-top:14px;border-top:1px dotted #E9ECF1;font-size:12px;line-height:1.5;color:#98A2B3}
-#lf-dp .irs-aviso{display:flex;gap:10px;margin:16px 0 0;padding:12px 14px;border-radius:var(--radius-xl);background:var(--color-warning-50);border:1px solid var(--color-warning-200);color:#93370D;font-size:14px;line-height:22px;text-align:left}
+#lf-dp .irs-aviso{display:flex;gap:10px;margin:16px 0;padding:12px 14px;border-radius:var(--radius-xl);background:var(--color-warning-50);border:1px solid var(--color-warning-200);color:#93370D;font-size:14px;line-height:22px;text-align:left}
 #lf-dp .irs-aviso a{color:inherit;text-decoration:underline}
 #lf-dp .irs-grp{display:grid;grid-template-columns:260px 1fr;gap:12px;align-items:center;margin:0 0 8px}
 #lf-dp .irs-grp-l{font-size:13px;font-weight:500;line-height:18px;color:#4F5969;text-align:left}
@@ -47,6 +47,7 @@
 #lf-dp .irs-tabs .dp-tab.is-active{background:#3A4454;border-color:#3A4454;color:#F9FAFB}
 #lf-dp .irs-tab-t{margin:16px 0 12px}
 #lf-dp .irs-ra{margin:16px 0 0}
+#lf-dp .irs-fx-m{display:none}
 #lf-dp .irs-fontes{margin:16px 0 0;padding-left:18px;font-size:13px;line-height:22px;color:#4F5969;list-style:disc;text-align:left}
 @media (max-width:767px){
   #lf-dp .irs-row.is-hl span:last-child{font-size:18px}
@@ -58,4 +59,7 @@
   #lf-dp .irs-grp{grid-template-columns:1fr;gap:6px;margin-bottom:12px}
   #lf-dp .irs-tabs .dp-tab{font-size:13px;padding:10px 4px}
   #lf-dp .irs-sec{margin-top:36px}
+  #lf-dp .irs-t-esc th:nth-child(2),#lf-dp .irs-t-esc td:nth-child(2),#lf-dp .irs-t-esc th:nth-child(4),#lf-dp .irs-t-esc td:nth-child(4){display:none}
+  #lf-dp .irs-t-esc td:first-child .irs-fx-m{display:block;margin:2px 0 0;font-size:13px;line-height:18px;color:#4F5969}
+  #lf-dp .irs-t-esc td:first-child{min-width:150px;max-width:170px}
 }

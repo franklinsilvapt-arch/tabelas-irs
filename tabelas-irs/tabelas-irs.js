@@ -498,13 +498,19 @@
     }).join('') + '</div></div>';
   }
 
+  /* "Decreto-Lei n.º 212/2026, de 04/11" -> "do Decreto-Lei n.º 212/2026, de 4 de novembro" */
+  function redacaoTxt(r) {
+    var M = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+    var t = r.replace(/de (\d{1,2})\/(\d{1,2})$/, function (m, d, mm) { return 'de ' + parseInt(d, 10) + ' de ' + M[parseInt(mm, 10) - 1]; });
+    return (/^(Decreto|Despacho)/.test(t) ? 'do ' : 'da ') + t;
+  }
   function tabEscaloes(on) {
     var x = escaloes(S.reg), d = x.esc.some(function (e) { return casas(e[1]) === 2; }) ? 2 : 1;
-    var h = '<div class="irs-box"><table class="irs-t"><thead><tr><th>Escalão</th><th>Rendimento coletável</th><th class="num">Taxa</th><th class="num">Taxa média</th><th class="num">Parcela a abater</th></tr></thead><tbody>';
+    var h = '<div class="irs-box"><table class="irs-t irs-t-esc"><thead><tr><th>Escalão</th><th>Rendimento coletável</th><th class="num">Taxa</th><th class="num">Taxa média</th><th class="num">Parcela a abater</th></tr></thead><tbody>';
     x.esc.forEach(function (e, i) {
       var de = i ? x.esc[i - 1][0] : 0;
       var fx = i === 0 ? 'Até ' + eurInt(e[0]) : e[0] === Infinity ? 'Mais de ' + eurInt(de) : 'De ' + eurInt(de) + ' a ' + eurInt(e[0]);
-      h += '<tr' + (on === i ? ' class="is-on"' : '') + '><td>' + (i + 1) + '.º' + (on === i ? '<span class="irs-tu">O teu escalão</span>' : '') + '</td><td>' + fx + '</td><td class="num">' + pct(e[1], d) + '</td><td class="num">' + x.media[i] + '</td><td class="num">' + eur(e[2]) + '</td></tr>';
+      h += '<tr' + (on === i ? ' class="is-on"' : '') + '><td>' + (i + 1) + '.º<span class="irs-fx-m">' + fx + '</span>' + (on === i ? '<span class="irs-tu">O teu escalão</span>' : '') + '</td><td>' + fx + '</td><td class="num">' + pct(e[1], d) + '</td><td class="num">' + x.media[i] + '</td><td class="num">' + eur(e[2]) + '</td></tr>';
     });
     return h + '</tbody></table></div>';
   }
@@ -632,7 +638,7 @@
       avisoReg + '</div>' +
 
       '<div class="irs-sec"><h2 class="heading-style-h2 irs-h2">Escalões de IRS ' + ANO + '</h2>' +
-      (mudou ? '<p class="irs-p">Os escalões aplicam-se ao rendimento coletável de ' + ANO + '. São os do <a href="' + L.art68 + '" target="_blank" rel="noopener">artigo 68.º do Código do IRS</a>, na redação da ' + REDACAO + '.</p>' : '<p class="irs-p">Os escalões aplicam-se ao rendimento coletável de 2026, que declaras em 2027. Foram fixados pelo <a href="' + L.lei + '" target="_blank" rel="noopener">Orçamento do Estado para 2026 (Lei n.º 73-A/2025)</a>, que alterou o <a href="' + L.art68 + '" target="_blank" rel="noopener">artigo 68.º do Código do IRS</a>: os limites subiram 3,51% e as taxas do 2.º ao 5.º escalão desceram 0,3 pontos percentuais.</p>') +
+      (mudou ? '<p class="irs-p">Os escalões aplicam-se ao rendimento coletável de ' + ANO + '. São os do <a href="' + L.art68 + '" target="_blank" rel="noopener">artigo 68.º do Código do IRS</a>, na redação ' + redacaoTxt(REDACAO) + '.</p>' : '<p class="irs-p">Os escalões aplicam-se ao rendimento coletável de 2026, que declaras em 2027. Foram fixados pelo <a href="' + L.lei + '" target="_blank" rel="noopener">Orçamento do Estado para 2026 (Lei n.º 73-A/2025)</a>, que alterou o <a href="' + L.art68 + '" target="_blank" rel="noopener">artigo 68.º do Código do IRS</a>: os limites subiram 3,51% e as taxas do 2.º ao 5.º escalão desceram 0,3 pontos percentuais.</p>') +
       botoesRegiao() + escReg +
       tabEscaloes(S.res && S.res.reg === S.reg && !S.res.an.isento ? S.res.an.i : -1) +
       '<p class="dp-foot">IRS = rendimento coletável × taxa do escalão − parcela a abater. A parcela a abater é calculada por nós a partir das taxas da lei e dá o mesmo resultado que aplicar cada taxa à sua fatia de rendimento.' + (S.reg === 'C' ? ' Rendimentos coletáveis acima de 80.000€ pagam ainda a taxa adicional de solidariedade (2,5% até 250.000€ e 5% acima).' : '') + '</p>' +
