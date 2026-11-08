@@ -61,5 +61,6 @@
   #lf-dp .irs-sec{margin-top:36px}
   #lf-dp .irs-t-esc th:nth-child(2),#lf-dp .irs-t-esc td:nth-child(2),#lf-dp .irs-t-esc th:nth-child(4),#lf-dp .irs-t-esc td:nth-child(4){display:none}
   #lf-dp .irs-t-esc td:first-child .irs-fx-m{display:block;margin:2px 0 0;font-size:13px;line-height:18px;color:#4F5969}
-  #lf-dp .irs-t-esc td:first-child{min-width:150px;max-width:170px}
+  #lf-dp .irs-t.irs-t-esc{min-width:0}
+  #lf-dp .irs-t-esc td:first-child{min-width:150px;max-width:none}
 }
