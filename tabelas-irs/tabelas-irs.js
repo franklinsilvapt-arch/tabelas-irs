@@ -2,7 +2,7 @@
    Retencao na fonte, continente: Despacho n.o 233-A/2026, de 6 de janeiro, Tabelas I a XI (lidas do PDF do Diario da Republica).
    Retencao na fonte, Acores: Despacho n.o 1179/2026, de 3 de fevereiro (valores da Circular n.o 3/2026 da AT, que reproduz as tabelas em texto).
    Retencao na fonte, Madeira: Despacho n.o 19/2026 da Secretaria Regional das Financas, com os valores da Declaracao de Retificacao n.o 10/2026.
-   Escaloes: artigo 68.o do Codigo do IRS, redacao da Lei n.o 73-A/2025 (OE 2026). Acores: menos 30% (DLR n.o 2/99/A). Madeira: DLR n.o 8/2025/M.
+   Escaloes: artigo 68.o do Codigo do IRS, redacao da Lei n.o 73-A/2025 (OE 2026). Acores: menos 30% (DLR n.o 2/99/A). Madeira: DLR n.o 8/2025/M, alterado pelo DLR n.o 17/2026/M.
    Reutiliza o CSS do comparador de depositos (#lf-dp .dp-*) mais tabelas-irs.css. */
 (function () {
   'use strict';
@@ -27,9 +27,9 @@
     [43090, 34.9, 4209.85], [46566, 43.1, 7743.23], [86634, 44.6, 8441.72], [Infinity, 48, 11387.27]
   ];
   var MEDIA = ['12,500%', '13,579%', '15,823%', '17,705%', '20,579%', '25,130%', '26,472%', '34,856%', '-'];
-  /* Taxas de IRS na Madeira em 2026 (Decreto Legislativo Regional n.o 8/2025/M), com os mesmos limites dos escaloes nacionais.
+  /* Taxas de IRS na Madeira em 2026 (Decreto Legislativo Regional n.o 17/2026/M, de 5/11, com efeitos a 1/1/2026), com os mesmos limites dos escaloes nacionais.
      As dos Acores nao estao aqui: sao as taxas nacionais em vigor menos 30% e saem de ESC. */
-  var TAXAS_M = [8.75, 10.99, 14.84, 16.87, 21.77, 24.43, 30.17, 31.22, 33.6];
+  var TAXAS_M = [8.54, 10.64, 14.49, 16.52, 21.42, 24.22, 30.17, 31.22, 33.6];
   /* Tabelas de retencao. Cada linha: [remuneracao mensal ate (null = acima da anterior), taxa marginal maxima em %,
      parcela a abater em EUR ou [taxa, fator, constante] para "taxa x fator x (constante - R)",
      parcela adicional (por dependente nas tabelas I a VII; por deficiente das Forcas Armadas nas X e XI; null = nao tem),
@@ -384,7 +384,7 @@
     madeira: 'https://joram.madeira.gov.pt/joram/2serie/Ano%20de%202026/IISerie-013-2026-01-20Supl4.pdf',
     madeiraRet: 'https://at.madeira.gov.pt/ficheiros/IISerie-016-2026-01-23Supl3.pdf',
     madeiraCirc: 'https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/legislacao/instrucoes_administrativas/Documents/Circular_2_2026.pdf',
-    madeiraEsc: 'https://diariodarepublica.pt/dr/detalhe/decreto-legislativo-regional/8-2025-993031451',
+    madeiraEsc: 'https://diariodarepublica.pt/dr/detalhe/decreto-legislativo-regional/17-2026-1191346240',
     tabelasAT: 'https://info.portaldasfinancas.gov.pt/pt/apoio_contribuinte/tabela_ret_doclib/Pages/default.aspx',
     prop: 'https://portugal.gov.pt/gc25/comunicacao/comunicados/reducao-das-retencoes-na-fonte-em-novembro-',
     taxas: 'https://portugal.gov.pt/api/media/edge/Project/Portal-do-Governo/Portal-do-Governo/gc25/documentos/Financas/20260917_IRS_Set2026_simulacoes.pdf',
@@ -595,9 +595,7 @@
     var escReg = S.reg === 'A'
       ? '<p class="irs-p">Nos Açores, os limites dos escalões são os mesmos e as taxas são 30% mais baixas em todos os escalões. É a redução do artigo 4.º do Decreto Legislativo Regional n.º 2/99/A, aplicada às taxas nacionais em vigor.</p>'
       : S.reg === 'M'
-        ? (mudou
-          ? '<p class="irs-p">Na Madeira, os limites dos escalões são os mesmos e as taxas estão no <a href="' + L.madeiraEsc + '" target="_blank" rel="noopener">Decreto Legislativo Regional n.º 8/2025/M</a>, o Orçamento da Região para 2026. Foram fixadas 30% abaixo das taxas nacionais do Orçamento do Estado. Com a descida nacional, a diferença é menor nos seis primeiros escalões até a Região mudar o diploma.</p>'
-          : '<p class="irs-p">Na Madeira, os limites dos escalões são os mesmos e as taxas são 30% mais baixas em todos os escalões. Estão no <a href="' + L.madeiraEsc + '" target="_blank" rel="noopener">Decreto Legislativo Regional n.º 8/2025/M</a>, o Orçamento da Região para 2026.</p>')
+        ? '<p class="irs-p">Na Madeira, os limites dos escalões são os mesmos e as taxas são 30% mais baixas em todos os escalões. Estão no <a href="' + L.madeiraEsc + '" target="_blank" rel="noopener">Decreto Legislativo Regional n.º 17/2026/M</a>, que acompanhou a descida nacional com efeitos a 1 de janeiro de 2026.</p>'
         : '';
     var propReg = S.reg === 'A' ? ' Nos Açores, a redução de 30% incide sobre as taxas nacionais em vigor, por isso as taxas da região descem também quando as nacionais descerem.'
       : S.reg === 'M' ? ' Na Madeira, as taxas estão num diploma da Região e só mudam se esse diploma for alterado.' : '';
@@ -644,7 +642,7 @@
       '<li><a href="' + L.madeira + '" target="_blank" rel="noopener">Despacho n.º 19/2026 da Secretaria Regional das Finanças</a>, <a href="' + L.madeiraRet + '" target="_blank" rel="noopener">Declaração de Retificação n.º 10/2026</a> e <a href="' + L.madeiraCirc + '" target="_blank" rel="noopener">Circular n.º 2/2026 da Autoridade Tributária</a>: tabelas de retenção na fonte da Madeira.</li>' +
       (mudou ? '<li><a href="' + L.art68 + '" target="_blank" rel="noopener">Artigo 68.º do Código do IRS</a> (' + REDACAO + '): escalões de IRS.</li>' : '<li><a href="' + L.lei + '" target="_blank" rel="noopener">Lei n.º 73-A/2025, de 30 de dezembro</a> (Orçamento do Estado para 2026): escalões de IRS.</li>') +
       '<li>Artigo 4.º do Decreto Legislativo Regional n.º 2/99/A: redução de 30% nas taxas de IRS nos Açores.</li>' +
-      '<li><a href="' + L.madeiraEsc + '" target="_blank" rel="noopener">Decreto Legislativo Regional n.º 8/2025/M</a> (Orçamento da Madeira para 2026): taxas de IRS na Madeira.</li></ul></div>';
+      '<li><a href="' + L.madeiraEsc + '" target="_blank" rel="noopener">Decreto Legislativo Regional n.º 17/2026/M, de 5 de novembro</a>: taxas de IRS na Madeira.</li></ul></div>';
   }
 
   function num(id) { var el = document.getElementById(id); return el ? parseInt(String(el.value).replace(/\D/g, ''), 10) || 0 : 0; }

@@ -15,7 +15,7 @@ Ferramenta da página `/tabelas-irs` do literaciafinanceira.pt: as 11 tabelas de
 - Madeira (`RET_M`): [Despacho n.º 19/2026 da Secretaria Regional das Finanças](https://joram.madeira.gov.pt/joram/2serie/Ano%20de%202026/IISerie-013-2026-01-20Supl4.pdf), com os valores da [Declaração de Retificação n.º 10/2026](https://at.madeira.gov.pt/ficheiros/IISerie-016-2026-01-23Supl3.pdf), que republicou as tabelas (a I, a II e a IX saíram com erros no despacho original). Conferidos com a [Circular n.º 2/2026 da AT](https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/legislacao/instrucoes_administrativas/Documents/Circular_2_2026.pdf).
 - Escalões nacionais (constante `ESC`): artigo 68.º do Código do IRS, na redação da Lei n.º 73-A/2025 (Orçamento do Estado para 2026).
 - Escalões dos Açores: taxas nacionais em vigor com 30% de redução (artigo 4.º do Decreto Legislativo Regional n.º 2/99/A). O JS calcula-as a partir de `ESC`, por isso acompanham sozinhas qualquer mudança nas taxas nacionais.
-- Escalões da Madeira (constante `TAXAS_M`): tabela do [Decreto Legislativo Regional n.º 8/2025/M](https://diariodarepublica.pt/dr/detalhe/decreto-legislativo-regional/8-2025-993031451) (Orçamento da Região para 2026).
+- Escalões da Madeira (constante `TAXAS_M`): tabela do [Decreto Legislativo Regional n.º 17/2026/M, de 5 de novembro](https://diariodarepublica.pt/dr/detalhe/decreto-legislativo-regional/17-2026-1191346240), que alterou a do [DLR n.º 8/2025/M](https://diariodarepublica.pt/dr/detalhe/decreto-legislativo-regional/8-2025-993031451) para acompanhar a descida nacional, com efeitos a 1 de janeiro de 2026.
 
 ## Quando atualizar
 
