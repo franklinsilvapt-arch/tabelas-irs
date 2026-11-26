@@ -1,0 +1,17 @@
+{
+ "spot": {
+  "xagUsd": 41.358,
+  "usdEur": 0.9112,
+  "eurG": 1.2116,
+  "data": "2026-11-26",
+  "atualizadoEm": "2026-11-26T16:12:47Z",
+  "fonte": "api.gold-api.com + api.frankfurter.dev (BCE)"
+ },
+ "fonteHist": "registo diário do Literacia Financeira",
+ "hist": [
+  {
+   "d": "2026-11-26",
+   "eur": 1.2116
+  }
+ ]
+}
