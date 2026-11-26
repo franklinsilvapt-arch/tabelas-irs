@@ -72,9 +72,9 @@
       '<div class="lfk-card">' +
       '<div class="lfk-card-head"><h2 class="lfk-h-sm">Resultados</h2></div>' +
       '<div class="lfk-kv is-total"><span id="iv-r-titulo">Valor com IVA</span><span id="iv-r-total">0,00€</span></div>' +
-      '<div class="lfk-kv"><span>Valor sem IVA</span><span id="iv-r-sem">0,00€</span></div>' +
+      '<div class="lfk-kv" id="iv-r-sem-l"><span>Valor sem IVA</span><span id="iv-r-sem">0,00€</span></div>' +
       '<div class="lfk-kv"><span id="iv-r-iva-l">IVA (23%)</span><span id="iv-r-iva">0,00€</span></div>' +
-      '<div class="lfk-kv"><span>Valor com IVA</span><span id="iv-r-com">0,00€</span></div>' +
+      '<div class="lfk-kv" id="iv-r-com-l"><span>Preço com IVA</span><span id="iv-r-com">0,00€</span></div>' +
       '<p class="lfk-summary" style="margin-top:1.5rem" id="iv-r-frase"></p>' +
       '</div>' +
       '<div class="lfk-card" style="margin-top:1.5rem">' +
@@ -108,6 +108,9 @@
     el('iv-r-iva-l').textContent = 'IVA (' + pct(taxa) + ')';
     el('iv-r-iva').textContent = f(r.iva);
     el('iv-r-com').textContent = f(r.com);
+    /* a linha igual ao resultado principal nao se repete */
+    el('iv-r-sem-l').style.display = modo === 'rem' ? 'none' : '';
+    el('iv-r-com-l').style.display = modo === 'rem' ? '' : 'none';
 
     var m = mult(1 + taxa / 100), frase;
     if (modo === 'rem') {
