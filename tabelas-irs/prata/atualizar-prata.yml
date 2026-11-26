@@ -1,0 +1,49 @@
+name: Atualizar preço da prata
+
+# MOVER ESTE FICHEIRO PARA .github/workflows/atualizar-prata.yml (o conector do GitHub não escreve em .github/workflows).
+#
+# Grava tabelas-irs/prata/prata-dados.json (cotação de reserva e série diária para o gráfico do
+# /preco-da-prata) e põe a cotação do dia no HTML da página: atualiza o item "Prata (hoje)"
+# do CMS do Webflow e publica SÓ esse item, nunca o site.
+# Precisa do secret WEBFLOW_TOKEN (token do site literaciafinanceira.pt com CMS read e write).
+# Sem o secret, a Action só atualiza o ficheiro de dados.
+
+on:
+  schedule:
+    # Todos os dias às 6h12 UTC, para a data da página ser a de hoje logo de manhã,
+    # e nos dias úteis às 15h42 UTC, depois do câmbio de referência do BCE.
+    - cron: '12 6 * * *'
+    - cron: '42 15 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: atualizar-prata
+  cancel-in-progress: false
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Atualizar dados e item "Prata (hoje)"
+        env:
+          WEBFLOW_TOKEN: ${{ secrets.WEBFLOW_TOKEN }}
+          WEBFLOW_PRATA_COLLECTION_ID: '6b08aa07d0b2cc9b625e428d'
+          WEBFLOW_PRATA_ITEM_ID: '6b08aa408a4cfe5bb13c99f2'
+        run: node tabelas-irs/prata/atualizar-prata.mjs
+
+      - name: Commit e push se houver alterações
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tabelas-irs/prata/prata-dados.json
+          git diff --cached --quiet || (git commit -m "Atualizar preço da prata ($(date -u +%F))" && git push)

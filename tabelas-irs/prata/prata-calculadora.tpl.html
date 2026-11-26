@@ -1,0 +1,34 @@
+<div id="lfc-prata">
+  <p class="lfc-prata-calc-sub">Escolhe o toque da peça, indica o peso e vê quanto vale a prata à cotação de agora.</p>
+
+  <div class="lfc-prata-seg" id="lfc-prata-seg">
+    <button type="button" class="lfc-prata-seg-btn" data-toque="999">999</button>
+    <button type="button" class="lfc-prata-seg-btn is-active" data-toque="925">925</button>
+    <button type="button" class="lfc-prata-seg-btn" data-toque="835">835</button>
+    <button type="button" class="lfc-prata-seg-btn" data-toque="830">830</button>
+    <button type="button" class="lfc-prata-seg-btn" data-toque="800">800</button>
+  </div>
+
+  <div class="lfc-prata-inputs">
+    <div class="lfc-prata-field">
+      <label for="lfc-prata-peso" class="form_label">Peso da peça</label>
+      <div class="input-text_wrapper">
+        <input id="lfc-prata-peso" class="form_input is-normal" value="100" inputmode="decimal" maxlength="7" autocomplete="off">
+        <div class="input-text-position"><div class="text-size-medium"><div class="text-color-placeholder"><div>g</div></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lfc-prata-result" id="lfc-prata-result">@@RESULT@@</div>
+
+  <div class="lfc-prata-toques">
+    <div class="lfc-prata-tq-head-row">
+      <div class="lfc-prata-tq-head-cell">Toque (milésimas)</div>
+      <div class="lfc-prata-tq-head-cell">Prata pura</div>
+      <div class="lfc-prata-tq-head-cell">Valor por grama</div>
+    </div>
+    <div id="lfc-prata-toques-tbody">@@ROWS@@</div>
+  </div>
+
+  <div class="lfc-prata-disclaimer">Valores indicativos, calculados à cotação spot internacional, sem margens de compra e venda. O valor final de uma peça depende sempre da avaliação do toque e do peso feita no local. Esta página é informativa e não constitui aconselhamento financeiro.</div>
+</div>
