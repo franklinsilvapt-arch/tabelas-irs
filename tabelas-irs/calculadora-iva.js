@@ -50,13 +50,13 @@
       '<div class="lfk-calc-form"><div class="lfk-calc-inner">' +
       '<div class="lfk-calc-title">Calculadora de IVA</div>' +
       '<form class="lfk-stack" id="iv-form" onsubmit="return false">' +
-      '<div class="lfk-field"><label class="lfk-label" for="iv-valor">Valor' + ajuda('O preço ou o montante da fatura, em euros.') + '</label>' +
-      '<div class="lfk-input-wrap"><input class="lfk-input lfk-num" id="iv-valor" name="valor" inputmode="decimal" value="100"><span class="lfk-unit">€</span></div></div>' +
-      '<div class="lfk-field"><span class="lfk-label">Este valor é' + ajuda('Escolhe "sem IVA" para acrescentar o imposto a um preço. Escolhe "com IVA" para saberes quanto do preço é imposto.') + '</span>' +
+      '<div class="lfk-field"><span class="lfk-label">O que queres fazer?' + ajuda('Acrescentar IVA: tens o preço sem imposto e queres o preço final. Tirar IVA: tens o preço final e queres saber quanto é imposto.') + '</span>' +
       '<div class="lfk-radios">' +
-      '<label class="lfk-radio"><input type="radio" name="iv-modo" value="add" checked> <span>Sem IVA (acrescentar)</span></label>' +
-      '<label class="lfk-radio"><input type="radio" name="iv-modo" value="rem"> <span>Com IVA (retirar)</span></label>' +
+      '<label class="lfk-radio"><input type="radio" name="iv-modo" value="add" checked> <span>Acrescentar IVA</span></label>' +
+      '<label class="lfk-radio"><input type="radio" name="iv-modo" value="rem"> <span>Tirar IVA</span></label>' +
       '</div></div>' +
+      '<div class="lfk-field"><label class="lfk-label" for="iv-valor"><span id="iv-valor-l">Preço sem IVA</span>' + ajuda('O preço ou o montante da fatura, em euros.') + '</label>' +
+      '<div class="lfk-input-wrap"><input class="lfk-input lfk-num" id="iv-valor" name="valor" inputmode="decimal" value="100"><span class="lfk-unit">€</span></div></div>' +
       '<div class="lfk-field"><label class="lfk-label" for="iv-regiao">Região' + ajuda('O IVA é mais baixo nos Açores e na Madeira. Conta o local onde a venda ou o serviço é feito.') + '</label>' +
       '<select class="lfk-input" id="iv-regiao" name="regiao"><option value="C">Portugal continental</option><option value="M">Madeira</option><option value="A">Açores</option></select></div>' +
       '<div class="lfk-field"><span class="lfk-label">Taxa de IVA' + ajuda('A taxa normal aplica-se à maioria dos bens e serviços. A reduzida aplica-se, por exemplo, a muitos alimentos essenciais, livros e medicamentos. A intermédia aplica-se, por exemplo, às refeições em restaurantes.') + '</span>' +
@@ -71,8 +71,8 @@
       '<div id="iv-resultados" hidden>' +
       '<div class="lfk-card">' +
       '<div class="lfk-card-head"><h2 class="lfk-h-sm">Resultados</h2></div>' +
-      '<div class="lfk-kv is-total"><span id="iv-r-titulo">Valor com IVA</span><span id="iv-r-total">0,00€</span></div>' +
-      '<div class="lfk-kv" id="iv-r-sem-l"><span>Valor sem IVA</span><span id="iv-r-sem">0,00€</span></div>' +
+      '<div class="lfk-kv is-total"><span id="iv-r-titulo">Preço com IVA</span><span id="iv-r-total">0,00€</span></div>' +
+      '<div class="lfk-kv" id="iv-r-sem-l"><span>Preço sem IVA</span><span id="iv-r-sem">0,00€</span></div>' +
       '<div class="lfk-kv"><span id="iv-r-iva-l">IVA (23%)</span><span id="iv-r-iva">0,00€</span></div>' +
       '<div class="lfk-kv" id="iv-r-com-l"><span>Preço com IVA</span><span id="iv-r-com">0,00€</span></div>' +
       '<p class="lfk-summary" style="margin-top:1.5rem" id="iv-r-frase"></p>' +
@@ -102,7 +102,7 @@
     var tabela = TAXAS[reg] || TAXAS.C, taxa = tabela[tx];
     var r = contas(valor, taxa, modo);
 
-    el('iv-r-titulo').textContent = modo === 'rem' ? 'Valor sem IVA' : 'Valor com IVA';
+    el('iv-r-titulo').textContent = modo === 'rem' ? 'Preço sem IVA' : 'Preço com IVA';
     el('iv-r-total').textContent = f(modo === 'rem' ? r.sem : r.com);
     el('iv-r-sem').textContent = f(r.sem);
     el('iv-r-iva-l').textContent = 'IVA (' + pct(taxa) + ')';
@@ -129,7 +129,7 @@
       var o = contas(valor, tabela[k], modo);
       linhas += '<div class="lfk-kv"><span>' + NOMES[k] + ' (' + pct(tabela[k]) + ')</span><span>' + f(modo === 'rem' ? o.sem : o.com) + '</span></div>';
     });
-    el('iv-o-titulo').textContent = modo === 'rem' ? 'Valor sem IVA com as outras taxas' : 'Valor com IVA com as outras taxas';
+    el('iv-o-titulo').textContent = modo === 'rem' ? 'Preço sem IVA com as outras taxas' : 'Preço com IVA com as outras taxas';
     el('iv-outras').innerHTML = linhas;
   }
 
@@ -147,6 +147,10 @@
     if (LFK.numInputs) LFK.numInputs(root);
     if (LFK.theme) LFK.theme(root);
     el('iv-regiao').addEventListener('change', atualizarTaxas);
+    /* so muda o nome do campo; os resultados continuam a aparecer apenas ao clicar em Calcular */
+    Array.prototype.forEach.call(root.querySelectorAll('input[name="iv-modo"]'), function (r) {
+      r.addEventListener('change', function () { el('iv-valor-l').textContent = radio('iv-modo') === 'rem' ? 'Preço com IVA' : 'Preço sem IVA'; });
+    });
     atualizarTaxas();
     LFK.calc(el('iv-calcular'), { results: '#iv-resultados', empty: '#iv-placeholder', run: calcular });
   }
