@@ -97,7 +97,7 @@ var LF_PET = {
       dia = ' Face ao fecho anterior, o Brent ' + (D.varDia > 0 ? 'sobe' : 'desce') + ' cerca de ' + fmtPct(D.varDia).replace('+', '').replace('-', '') + '.';
     }
     var wti = D.wtiEur ? ' O barril de <strong>WTI</strong>, a referência americana, está nos <strong>' + fmtUsd(D.wti) + '</strong>.' : '';
-    el.innerHTML = 'A <strong>' + dataPT(D.data) + '</strong>, às ' + D.hora + ', o barril de <strong>petróleo Brent</strong> custa cerca de <strong>' + fmtUsd(D.brent) + '</strong>, ou seja <strong>' + fmtEuro(D.eurBarril) + '</strong> ao câmbio de agora. Como um barril tem 159 litros, o litro de crude fica em cerca de <strong>' + fmtEuro(D.eurLitro, 3) + '</strong>.' + wti + dia + frasePeriodos();
+    el.innerHTML = 'A <strong>' + dataPT(D.data) + '</strong>, às ' + D.hora + ', o barril de <strong>petróleo Brent</strong> custa cerca de <strong>' + fmtUsd(D.brent) + '</strong>, ou seja <strong>' + fmtEuro(D.eurBarril) + '</strong> ao câmbio dessa hora. Como um barril tem 159 litros, o litro de crude fica em cerca de <strong>' + fmtEuro(D.eurLitro, 3) + '</strong>.' + wti + dia + frasePeriodos();
   }
   function renderStatus() {
     var dataEl = document.getElementById('lfc-pet-data-atualizado');
@@ -151,7 +151,12 @@ var LF_PET = {
     var el = document.getElementById('lfc-pet-barris');
     if (el && !el.__lfBound) {
       el.__lfBound = true;
-      el.addEventListener('input', function () {
+      el.addEventListener('input', function (e) {
+        /* Teclados com ponto decimal (iOS e Android noutros idiomas): o ponto escrito vira vírgula */
+        if (e && e.data === '.' && el.value.indexOf(',') === -1) {
+          var pos = el.selectionStart || el.value.length;
+          el.value = el.value.slice(0, pos - 1) + ',' + el.value.slice(pos);
+        }
         var limpo = el.value.replace(/[^\d,]/g, '');
         var partes = limpo.split(',');
         var inteiro = partes[0].replace(/^0+(?=\d)/, '').replace(/\B(?=(\d{3})+(?!\d))/g, '.');

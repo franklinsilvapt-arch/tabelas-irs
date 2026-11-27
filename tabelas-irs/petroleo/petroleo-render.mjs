@@ -102,7 +102,7 @@ export function frase(D) {
     dia = ` Face ao fecho anterior, o Brent ${X.varDia > 0 ? 'sobe' : 'desce'} cerca de ${fmtPct(X.varDia).replace('+', '').replace('-', '')}.`;
   }
   const wti = X.wtiEur ? ` O barril de <strong>WTI</strong>, a referência americana, está nos <strong>${fmtUsd(D.wti)}</strong>.` : '';
-  return `A <strong>${dataPT(X.data)}</strong>, às ${X.hora}, o barril de <strong>petróleo Brent</strong> custa cerca de <strong>${fmtUsd(D.brent)}</strong>, ou seja <strong>${fmtEuro(X.eurBarril)}</strong> ao câmbio de agora. Como um barril tem 159 litros, o litro de crude fica em cerca de <strong>${fmtEuro(X.eurLitro, 3)}</strong>.${wti}${dia}${frasePeriodos(D)}`;
+  return `A <strong>${dataPT(X.data)}</strong>, às ${X.hora}, o barril de <strong>petróleo Brent</strong> custa cerca de <strong>${fmtUsd(D.brent)}</strong>, ou seja <strong>${fmtEuro(X.eurBarril)}</strong> ao câmbio dessa hora. Como um barril tem 159 litros, o litro de crude fica em cerca de <strong>${fmtEuro(X.eurLitro, 3)}</strong>.${wti}${dia}${frasePeriodos(D)}`;
 }
 export function linhasUnidades(D) {
   const X = derivados(D);
