@@ -128,7 +128,7 @@ async function main() {
     wti = { preco: 90.12, em: '2026-11-27T16:21:00Z', serie: [{ d: '2026-11-26', v: 91.0 }] };
     fx = { preco: 1.0938, em: '2026-11-27T16:19:00Z', serie: [{ d: '2026-11-26', v: 1.095 }] };
   } else {
-    brent = await grafico('BZ=F', '1y');
+    brent = await grafico('BZ=F', '2y');
     wti = await grafico('CL=F', '5d').catch(() => null);
     fx = await grafico('EURUSD=X', '1y').catch(() => null);
   }
