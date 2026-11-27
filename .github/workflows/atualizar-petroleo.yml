@@ -14,6 +14,10 @@ on:
   schedule:
     - cron: '4 * * * 0-5'
   workflow_dispatch:
+    inputs:
+      leituras:
+        description: 'Número de leituras (uma a cada 15 minutos)'
+        default: '12'
 
 permissions:
   contents: write
@@ -40,10 +44,11 @@ jobs:
           WEBFLOW_PETROLEO_ITEM_ID: '6b09af5e80c4f8d51ba209a4'
           PETROLEO_FICHEIRO: /tmp/pub/petroleo-dados.json
           GH_TOKEN: ${{ github.token }}
+          LEITURAS: ${{ inputs.leituras || '12' }}
         run: |
           mkdir -p /tmp/pub
           git fetch -q origin dados-petroleo 2>/dev/null && git show origin/dados-petroleo:petroleo-dados.json > /tmp/pub/petroleo-dados.json || echo 'ainda não há ramo dados-petroleo'
-          for i in $(seq 1 12); do
+          for i in $(seq 1 "$LEITURAS"); do
             echo "::group::Leitura $i ($(date -u +%H:%M) UTC)"
             if node tabelas-irs/petroleo/atualizar-petroleo.mjs; then
               cd /tmp/pub
@@ -58,5 +63,5 @@ jobs:
               echo '::warning::leitura falhou, tenta de novo daqui a 15 minutos'
             fi
             echo '::endgroup::'
-            if [ "$i" -lt 12 ]; then sleep 900; fi
+            if [ "$i" -lt "$LEITURAS" ]; then sleep 900; fi
           done
