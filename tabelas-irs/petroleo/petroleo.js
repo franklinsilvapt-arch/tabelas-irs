@@ -105,7 +105,7 @@ var LF_PET = {
     var dot = document.getElementById('lfc-pet-dot');
     if (dataEl) dataEl.textContent = dataPT(D.data) + ' às ' + D.hora;
     if (D.aoVivo) {
-      if (fonteEl) fonteEl.textContent = 'Contratos futuros mais próximos, com atraso de alguns minutos';
+      if (fonteEl) fonteEl.textContent = 'Contratos futuros mais próximos, com atraso até 30 minutos';
       if (dot) dot.classList.remove('is-off');
     } else {
       if (fonteEl) fonteEl.textContent = 'Último preço negociado (mercado fechado ou sem negociação recente)';
