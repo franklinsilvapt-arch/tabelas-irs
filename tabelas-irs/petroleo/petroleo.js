@@ -233,6 +233,8 @@ var LF_PET = {
       })
       .catch(function () {
         if (!primeira) return;
+        /* Falha de rede pontual: tenta mais uma vez daqui a 3 segundos */
+        if (!carregar.repetiu) { carregar.repetiu = true; setTimeout(function () { carregar(true); }, 3000); }
         var dot = document.getElementById('lfc-pet-dot');
         var fonteEl = document.getElementById('lfc-pet-status-fonte');
         if (dot) dot.classList.add('is-off');
