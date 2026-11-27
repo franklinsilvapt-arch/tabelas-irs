@@ -1,0 +1,33 @@
+<!-- Painel do gráfico (visível quando [graphic-button] está is-active) -->
+<div class="graph-image-export" id="lfc-pet-chart-panel">
+  <div class="lfc-pet-chart-head">
+    <div class="lfc-pet-chart-title">Evolução do preço do Brent (USD por barril)</div>
+    <div class="lfc-pet-range">
+      <button type="button" class="lfc-pet-range-btn" data-range="1m">1M</button>
+      <button type="button" class="lfc-pet-range-btn is-active" data-range="3m">3M</button>
+      <button type="button" class="lfc-pet-range-btn" data-range="1a">1A</button>
+    </div>
+  </div>
+  <div class="lfc-pet-chart-canvas-wrap">
+    <canvas id="lfc-pet-chart"></canvas>
+  </div>
+  <div class="lfc-pet-chart-xaxis" id="lfc-pet-chart-fonte">Fecho diário do petróleo Brent em dólares por barril</div>
+  <div class="lfc-pet-legend">
+    <span class="lfc-pet-legend-item"><span class="lfc-pet-legend-dot"></span><span class="lfc-pet-legend-text">Brent - dólares por barril</span></span>
+  </div>
+</div>
+
+<!-- Painel do histórico (visível quando [table-button] está is-active) -->
+<div class="table-content-watermark_wrapper" id="lfc-pet-tabela-panel">
+  <div class="lfc-pet-tabela-wrap">
+    <div class="lfc-pet-tabela-head-row">
+      <div class="lfc-pet-tabela-head-cell">Data</div>
+      <div class="lfc-pet-tabela-head-cell">Brent (USD)</div>
+      <div class="lfc-pet-tabela-head-cell">Brent (€)</div>
+      <div class="lfc-pet-tabela-head-cell">Variação</div>
+    </div>
+    <div class="lfc-pet-tabela-body" id="lfc-pet-tabela-tbody"></div>
+  </div>
+</div>
+
+<p class="lfc-pet-graph-disclaimer">Fecho diário do contrato futuro de Brent mais próximo, em dólares por barril. Os valores em euros usam o câmbio EUR/USD do fecho de cada dia. A série pode diferir ligeiramente do preço do momento mostrado no topo da página.</p>

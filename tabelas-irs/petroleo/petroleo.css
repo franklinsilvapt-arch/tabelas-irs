@@ -1,0 +1,100 @@
+/* petroleo.css - /preco-do-petroleo. Servido pelo GitHub Pages do repo tabelas-irs. */
+/* Largura padrão das calculadoras (624px centrado) */
+.calculadora-form_wrapper:has(#lfc-pet-hero) .grid-block,
+.all-results_wrapper .table-results_padding:has(#lfc-pet) .grid-block {
+  width: 624px !important; max-width: 100% !important;
+  margin-left: auto !important; margin-right: auto !important; box-sizing: border-box !important;
+}
+#lfc-pet-hero, #lfc-pet { display: flex; flex-direction: column; width: 100%; max-width: 624px; margin: 0 auto; font-family: inherit; }
+.lfc-pet-h1-data { display: block; }
+
+#lfc-pet-hero .lfc-pet-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+#lfc-pet-hero .lfc-pet-card { background: #fff; border: 1px solid #E9ECF1; border-radius: 12px; padding: 18px 16px 16px; }
+#lfc-pet-hero .lfc-pet-card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+#lfc-pet-hero .lfc-pet-ico { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; }
+#lfc-pet-hero .lfc-pet-ico.is-brent { background: #202432; color: #fff; }
+#lfc-pet-hero .lfc-pet-ico.is-wti { background: rgba(32, 36, 50, 0.1); color: #202432; }
+#lfc-pet-hero .lfc-pet-ico svg { width: 15px; height: 15px; }
+#lfc-pet-hero .lfc-pet-name { font-size: 14px; font-weight: 600; color: #202432; }
+#lfc-pet-hero .lfc-pet-card-label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #96A0B0; margin-bottom: 6px; }
+#lfc-pet-hero .lfc-pet-card-delta { display: flex; align-items: center; gap: 8px; font-size: 28px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.15; color: #202432; }
+#lfc-pet-hero .lfc-pet-card-prices { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin-top: 12px; padding-top: 12px; border-top: 1px solid #E9ECF1; font-size: 13px; font-weight: 500; color: #697386; }
+#lfc-pet-hero .lfc-pet-prices-sep { color: #CED5DF; }
+#lfc-pet-hero .lfc-pet-var { font-weight: 700; }
+#lfc-pet-hero .lfc-pet-var.is-up { color: #067647; }
+#lfc-pet-hero .lfc-pet-var.is-down { color: #E04438; }
+#lfc-pet-hero .lfc-pet-var.is-flat { color: #202432; }
+
+#lfc-pet-hero .lfc-pet-headline { margin: 20px 0 0 0; font-size: 16px; font-weight: 400; color: #3A4454; line-height: 1.6; letter-spacing: -0.01em; }
+#lfc-pet-hero .lfc-pet-headline strong { font-weight: 600; color: #202432; }
+
+#lfc-pet-hero .lfc-pet-status { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1px solid #E9ECF1; }
+#lfc-pet-hero .lfc-pet-dot { width: 8px; height: 8px; border-radius: 50%; background: #17B26A; flex-shrink: 0; animation: lfcPetPulse 2.4s ease-out infinite; }
+#lfc-pet-hero .lfc-pet-dot.is-off { background: #96A0B0; animation: none; }
+@keyframes lfcPetPulse {
+  0% { box-shadow: 0 0 0 0 rgba(23, 178, 106, 0.35); }
+  70% { box-shadow: 0 0 0 6px rgba(23, 178, 106, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(23, 178, 106, 0); }
+}
+#lfc-pet-hero .lfc-pet-status-text { font-size: 13px; font-weight: 500; color: #3A4454; }
+#lfc-pet-hero .lfc-pet-status-text.is-muted { font-weight: 400; color: #98A2B3; }
+#lfc-pet-hero .lfc-pet-status-sep { color: #CED5DF; }
+#lfc-pet-hero .lfc-pet-fonte { margin-top: 12px; font-size: 12px; font-weight: 400; color: #98A2B3; line-height: 1.6; }
+
+#lfc-pet .lfc-pet-calc-sub { font-size: 14px; font-weight: 400; color: #4F5969; margin: 0 0 16px 0; line-height: 1.5; }
+#lfc-pet .lfc-pet-seg { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+#lfc-pet .lfc-pet-seg-btn { appearance: none; -webkit-appearance: none; cursor: pointer; padding: 0 14px; height: 38px; border: 1px solid #D0D5DD; border-radius: 12px; background: #fff; font-family: inherit; font-size: 13px; font-weight: 500; color: #4F5969; transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease; }
+#lfc-pet .lfc-pet-seg-btn:hover { border-color: #98A2B3; }
+#lfc-pet .lfc-pet-seg-btn.is-active { border-color: var(--colors--accent-blue, #2E90FA); color: var(--colors--accent-blue, #2E90FA); background: rgba(46, 144, 250, 0.05); font-weight: 600; }
+#lfc-pet .lfc-pet-inputs { display: grid; grid-template-columns: 1fr; gap: 12px; }
+#lfc-pet .lfc-pet-field { display: flex; flex-direction: column; gap: 0.4375rem; }
+#lfc-pet .lfc-pet-result { margin-top: 16px; padding-top: 14px; border-top: 1px solid #E9ECF1; font-size: 14px; font-weight: 400; color: #3A4454; line-height: 1.65; }
+#lfc-pet .lfc-pet-result strong { font-weight: 600; color: #202432; }
+
+#lfc-pet .lfc-pet-toques { margin-top: 20px; border: 1px solid #E9ECF1; border-radius: 12px; overflow: hidden; }
+#lfc-pet .lfc-pet-tq-head-row, #lfc-pet .lfc-pet-tq-row { display: grid; grid-template-columns: 0.9fr 1.1fr 1fr 0.9fr; gap: 8px; padding: 10px 12px; }
+#lfc-pet .lfc-pet-tq-head-row { border-bottom: 1px solid #E9ECF1; }
+#lfc-pet .lfc-pet-tq-head-cell { font-size: 12px; font-weight: 600; color: #3A4454; }
+#lfc-pet .lfc-pet-tq-row { border-bottom: 1px solid #E9ECF1; }
+#lfc-pet .lfc-pet-tq-row:last-child { border-bottom: none; }
+#lfc-pet .lfc-pet-tq-cell { font-size: 13px; font-weight: 400; color: #4F5969; }
+#lfc-pet .lfc-pet-tq-cell:first-child { color: #202432; font-weight: 500; }
+#lfc-pet .lfc-pet-tq-cell.is-valor { color: #202432; font-weight: 700; }
+#lfc-pet .lfc-pet-disclaimer { margin-top: 24px; padding-top: 16px; border-top: 1px solid #E9ECF1; font-size: 12px; font-weight: 400; color: #98A2B3; line-height: 1.5; }
+
+@media (max-width: 639px) {
+  #lfc-pet-hero .lfc-pet-cards { grid-template-columns: 1fr; }
+  #lfc-pet .lfc-pet-seg-btn { flex: 1; padding: 0 8px; }
+  #lfc-pet .lfc-pet-tq-head-row, #lfc-pet .lfc-pet-tq-row { grid-template-columns: 0.8fr 1.1fr 1fr 0.9fr; gap: 6px; padding: 10px 10px; }
+  #lfc-pet .lfc-pet-tq-cell { font-size: 12px; }
+}
+
+.graph-image-export .lfc-pet-chart-title,
+.graph-image-export .lfc-pet-chart-xaxis { font-size: 13px; font-weight: 500; letter-spacing: -0.1px; line-height: 18px; color: #202432; }
+.graph-image-export .lfc-pet-chart-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.graph-image-export .lfc-pet-range { display: flex; gap: 6px; }
+.graph-image-export .lfc-pet-range-btn { appearance: none; border: 1px solid #E9ECF1; background: #fff; cursor: pointer; padding: 4px 10px; border-radius: 8px; font-family: inherit; font-size: 12px; font-weight: 600; color: #697386; }
+.graph-image-export .lfc-pet-range-btn.is-active { background: #202432; border-color: #202432; color: #fff; }
+.graph-image-export .lfc-pet-chart-xaxis { margin-top: 12px; color: #697386; font-size: 12px; }
+.graph-image-export .lfc-pet-chart-canvas-wrap { position: relative; width: 100%; height: 340px; }
+.graph-image-export .lfc-pet-legend { display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap; }
+.graph-image-export .lfc-pet-legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.graph-image-export .lfc-pet-legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: #202432; }
+.graph-image-export .lfc-pet-legend-text { font-size: 12px; font-weight: 500; color: #4F5969; }
+
+#lfc-pet-tabela-panel { display: none; }
+#lfc-pet-tabela-panel .lfc-pet-tabela-wrap { overflow-x: auto; }
+#lfc-pet-tabela-panel .lfc-pet-tabela-body { border: 1px solid #E9ECF1; border-radius: 12px; }
+#lfc-pet-tabela-panel .lfc-pet-tabela-var { font-weight: 600; }
+#lfc-pet-tabela-panel .lfc-pet-tabela-var.is-up { color: #067647; }
+#lfc-pet-tabela-panel .lfc-pet-tabela-var.is-down { color: #E04438; }
+#lfc-pet-tabela-panel .lfc-pet-tabela-head-row,
+#lfc-pet-tabela-panel .lfc-pet-tabela-row { display: grid; grid-template-columns: 1fr 1fr 1fr 0.9fr; gap: 8px; padding: 10px 12px; min-width: 360px; }
+#lfc-pet-tabela-panel .lfc-pet-tabela-head-row { padding: 0 12px 12px 12px; }
+#lfc-pet-tabela-panel .lfc-pet-tabela-head-cell { font-size: 13px; font-weight: 600; letter-spacing: -0.1px; line-height: 18px; color: #4F5969; }
+#lfc-pet-tabela-panel .lfc-pet-tabela-row { border-bottom: 1px solid #E9ECF1; }
+#lfc-pet-tabela-panel .lfc-pet-tabela-row:last-child { border-bottom: none; }
+#lfc-pet-tabela-panel .lfc-pet-tabela-cell { font-size: 13px; font-weight: 400; color: #4F5969; }
+#lfc-pet-tabela-panel .lfc-pet-tabela-cell:first-child { color: #202432; font-weight: 500; }
+.lfc-pet-graph-disclaimer { font-size: 12px; color: #98A2B3; line-height: 1.5; margin-top: 16px; }
+
