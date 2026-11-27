@@ -33,7 +33,9 @@ const UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Geck
 const yahoo = (sim, host, range) => `https://${host}.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sim)}?range=${range}&interval=1d`;
 
 async function getTexto(url) {
-  const res = await fetch(url, { headers: { 'user-agent': UA, accept: 'application/json,text/plain,*/*' }, signal: AbortSignal.timeout(20000) });
+  const headers = { 'user-agent': UA, accept: 'application/json,text/plain,*/*' };
+  if (url.startsWith('https://r.jina.ai/')) { headers['x-no-cache'] = 'true'; headers['x-respond-with'] = 'text'; }
+  const res = await fetch(url, { headers, signal: AbortSignal.timeout(25000) });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.text();
 }
