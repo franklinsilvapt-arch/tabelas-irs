@@ -26,7 +26,10 @@ function primeiraForaDeLinks(html, texto) {
 for (const l of links) {
   const r = await fetch(`${API}/collections/${COL}/items?slug=${encodeURIComponent(l.slug)}`, { headers: h });
   const j = await r.json();
-  const item = (j.items || [])[0];
+  const lista = (j.items || []).filter((x) => x.fieldData && x.fieldData.slug === l.slug);
+  if ((j.items || []).length !== 1) console.log(`  aviso: a pesquisa por slug devolveu ${(j.items || []).length} itens (${lista.length} com o slug certo)`);
+  const base = lista[0];
+  const item = base ? await (await fetch(`${API}/collections/${COL}/items/${base.id}`, { headers: h })).json() : null;
   if (!item) { console.log(`NAO_ENCONTRADO ${l.slug}`); continue; }
   const html = item.fieldData.artigo || '';
   const caminho = l.href.replace(/^https:\/\/www\.literaciafinanceira\.pt/, '');
