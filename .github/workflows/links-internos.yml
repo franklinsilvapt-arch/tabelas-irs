@@ -1,0 +1,29 @@
+name: Links internos nos artigos
+
+# Acrescenta links internos a artigos do CMS (uma lista JSON de slug, texto e href).
+# Sem "aplicar", só mostra o que faria. Com "aplicar", grava no CMS sem publicar:
+# as alterações ficam por publicar no Webflow.
+on:
+  workflow_dispatch:
+    inputs:
+      links:
+        description: 'JSON: [{"slug":"...","texto":"...","href":"/..."}]'
+        required: true
+      aplicar:
+        description: 'Gravar no CMS (sem publicar)'
+        type: boolean
+        default: false
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - env:
+          WEBFLOW_TOKEN: ${{ secrets.WEBFLOW_TOKEN }}
+          LINKS: ${{ inputs.links }}
+        run: node qa/links-internos.mjs ${{ inputs.aplicar && '--aplicar' || '' }}
