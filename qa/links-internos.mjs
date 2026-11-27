@@ -29,7 +29,8 @@ for (const l of links) {
   const item = (j.items || [])[0];
   if (!item) { console.log(`NAO_ENCONTRADO ${l.slug}`); continue; }
   const html = item.fieldData.artigo || '';
-  if (html.includes(`href="${l.href}"`) || html.includes(`literaciafinanceira.pt${l.href}"`)) { console.log(`JA_TEM ${l.slug}`); continue; }
+  const caminho = l.href.replace(/^https:\/\/www\.literaciafinanceira\.pt/, '');
+  if (html.includes(`href="${caminho}"`) || html.includes(`literaciafinanceira.pt${caminho}"`)) { console.log(`JA_TEM ${l.slug}`); continue; }
   const p = primeiraForaDeLinks(html, l.texto);
   if (p < 0) { console.log(`TEXTO_NAO_ENCONTRADO ${l.slug}: ${l.texto}`); continue; }
   const novo = html.slice(0, p) + `<a href="${l.href}">${l.texto}</a>` + html.slice(p + l.texto.length);
