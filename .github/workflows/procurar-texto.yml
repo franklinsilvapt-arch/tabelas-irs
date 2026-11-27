@@ -11,6 +11,9 @@ on:
       destino:
         description: 'Link de destino, para marcar as páginas que já o têm (por exemplo /preco-do-petroleo)'
         default: ''
+      base:
+        description: 'Site (produção ou staging)'
+        default: 'https://www.literaciafinanceira.pt'
 
 jobs:
   procurar:
@@ -21,4 +24,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: node qa/procurar-texto.mjs "${{ inputs.termo }}" "${{ inputs.destino }}"
+      - env:
+          BASE: ${{ inputs.base }}
+        run: node qa/procurar-texto.mjs "${{ inputs.termo }}" "${{ inputs.destino }}"
