@@ -5,7 +5,7 @@ const [termo, destino = ''] = process.argv.slice(2);
 const re = new RegExp(termo, 'gi');
 const base = process.env.BASE || 'https://www.literaciafinanceira.pt';
 const sm = await (await fetch(`${base}/sitemap.xml`)).text();
-const urls = [...sm.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+const urls = [...sm.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1].replace(/^https:\/\/[^/]+/, base));
 const res = [];
 let i = 0;
 async function trabalhador() {
