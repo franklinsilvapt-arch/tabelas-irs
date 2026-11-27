@@ -1,7 +1,5 @@
 name: Atualizar preço da prata
 
-# MOVER ESTE FICHEIRO PARA .github/workflows/atualizar-prata.yml (o conector do GitHub não escreve em .github/workflows).
-#
 # Grava tabelas-irs/prata/prata-dados.json (cotação de reserva e série diária para o gráfico do
 # /preco-da-prata) e põe a cotação do dia no HTML da página: atualiza o item "Prata (hoje)"
 # do CMS do Webflow e publica SÓ esse item, nunca o site.
