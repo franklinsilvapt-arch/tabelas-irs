@@ -17,7 +17,13 @@ async function trabalhador() {
       const main = ini >= 0 ? html.slice(ini, fim) : html;
       const texto = main.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, ' ').replace(/<[^>]+>/g, ' ');
       const n = (texto.match(re) || []).length;
-      if (n) res.push(`${n}\t${destino && main.includes(destino) ? 'JA_TEM_LINK' : '-'}\t${u.replace(base, '')}`);
+      if (n) {
+        const limpo = texto.replace(/\s+/g, ' ');
+        const ctx = [];
+        let m; const r2 = new RegExp(termo, 'gi');
+        while ((m = r2.exec(limpo)) && ctx.length < 3) ctx.push('   > ' + limpo.slice(Math.max(0, m.index - 90), m.index + 90).trim());
+        res.push(`${n}\t${destino && main.includes(destino) ? 'JA_TEM_LINK' : '-'}\t${u.replace(base, '')}\n${ctx.join('\n')}`);
+      }
     } catch (e) { console.log('falhou', u, e.message); }
   }
 }
