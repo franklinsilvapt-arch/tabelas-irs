@@ -257,6 +257,8 @@
 
     ['sem', 'iva', 'com'].forEach(function (k) {
       el('iv-' + k).addEventListener('input', function () { origem = k; atualizarLigados(); });
+      /* ao entrar num campo, seleciona o valor para se escrever por cima */
+      el('iv-' + k).addEventListener('focus', function () { var i = this; setTimeout(function () { try { i.select(); } catch (e) {} }, 0); });
     });
     Array.prototype.forEach.call(root.querySelectorAll('input[name="iv-taxa"]'), function (r) { r.addEventListener('change', atualizarLigados); });
     Array.prototype.forEach.call(root.querySelectorAll('input[name="iv-modo"]'), function (r) { r.addEventListener('change', mudarModo); });
