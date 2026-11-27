@@ -1,0 +1,62 @@
+name: Atualizar preço do petróleo
+
+# Atualiza o Brent e o WTI do /preco-do-petroleo a cada 15 minutos.
+# - Grava petroleo-dados.json no ramo "dados-petroleo" (um só commit, sempre substituído, para não
+#   encher o main de commits). A página lê-o em raw.githubusercontent.com em cada visita.
+# - Uma vez por hora, atualiza o item "Petróleo (hoje)" do CMS do Webflow e publica SÓ esse item.
+#
+# O cron do GitHub chega atrasado e salta corridas. Por isso cada corrida fica a trabalhar até 3 horas
+# (uma leitura a cada 15 minutos) e a corrida seguinte cancela a anterior: mesmo que o GitHub salte
+# duas horas seguidas, os dados continuam a ser atualizados.
+# Mercado do Brent: de domingo às 23h00 a sexta às 22h00 (UTC). Ao sábado não corre.
+
+on:
+  schedule:
+    - cron: '4 * * * 0-5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: atualizar-petroleo
+  cancel-in-progress: true
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 190
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Leituras a cada 15 minutos (até 3 horas)
+        env:
+          WEBFLOW_TOKEN: ${{ secrets.WEBFLOW_TOKEN }}
+          WEBFLOW_PETROLEO_COLLECTION_ID: '6b09af4fd2c2b820dda2877e'
+          WEBFLOW_PETROLEO_ITEM_ID: '6b09af5e80c4f8d51ba209a4'
+          PETROLEO_FICHEIRO: /tmp/pub/petroleo-dados.json
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p /tmp/pub
+          git fetch -q origin dados-petroleo 2>/dev/null && git show origin/dados-petroleo:petroleo-dados.json > /tmp/pub/petroleo-dados.json || echo 'ainda não há ramo dados-petroleo'
+          for i in $(seq 1 12); do
+            echo "::group::Leitura $i ($(date -u +%H:%M) UTC)"
+            if node tabelas-irs/petroleo/atualizar-petroleo.mjs; then
+              cd /tmp/pub
+              rm -rf .git && git init -q -b dados-petroleo
+              git config user.name "github-actions[bot]"
+              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+              git add petroleo-dados.json
+              git commit -q -m "Preço do petróleo ($(date -u +'%F %H:%M') UTC)"
+              git push -q -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" dados-petroleo || echo 'push falhou'
+              cd "$GITHUB_WORKSPACE"
+            else
+              echo '::warning::leitura falhou, tenta de novo daqui a 15 minutos'
+            fi
+            echo '::endgroup::'
+            if [ "$i" -lt 12 ]; then sleep 900; fi
+          done
