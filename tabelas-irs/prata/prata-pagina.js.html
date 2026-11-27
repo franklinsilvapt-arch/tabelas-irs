@@ -1,0 +1,321 @@
+<script>
+/* ------------------------------------------------------------
+   FONTE DE DADOS
+   Em direto, em cada visita, de APIs públicas gratuitas e sem chave:
+   - Prata spot (XAG/USD): api.gold-api.com
+   - Câmbio USD-EUR: api.frankfurter.dev (taxa de referência do BCE)
+   Série diária e reserva: prata-dados.json, atualizado por uma Action no repo tabelas-irs
+   (GitHub Pages). Se tudo falhar, usa os valores fixos abaixo (fallback) e esconde o gráfico
+   e a variação diária em vez de mostrar dados errados.
+   Cópia deste script: tabelas-irs/prata/prata-pagina.js.html (as frases seguem prata-render.mjs).
+   O FAQPage em JSON-LD fica a cargo do script geral faq-schema.js (um só bloco por página).
+   ------------------------------------------------------------ */
+var LF_PRATA = {
+  urlPrata: 'https://api.gold-api.com/price/XAG',
+  urlCambio: 'https://api.frankfurter.dev/v1/latest?base=USD&symbols=EUR',
+  urlDados: 'https://franklinsilvapt-arch.github.io/tabelas-irs/tabelas-irs/prata/prata-dados.json',
+  fallback: { xagUsd: 44.175, usdEur: 0.9112, data: '2026-11-27' }
+};
+
+(function () {
+  var GRAMA = 31.1034768; /* gramas numa onça troy */
+  var MESES = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  var TOQUES = [
+    { id: '999', sub: 'prata fina',   pct: '99,9%', f: 1 },
+    { id: '925', sub: 'prata de lei', pct: '92,5%', f: 0.925 },
+    { id: '835', sub: '',             pct: '83,5%', f: 0.835 },
+    { id: '830', sub: '',             pct: '83,0%', f: 0.830 },
+    { id: '800', sub: '',             pct: '80,0%', f: 0.800 }
+  ];
+  var D = null;
+
+  function isoDate(d) {
+    return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+  }
+  function hojeISO() { return isoDate(new Date()); }
+  function dataPT(iso) { var p = iso.split('-'); return parseInt(p[2], 10) + ' de ' + MESES[parseInt(p[1], 10) - 1] + ' de ' + p[0]; }
+  function fmtNum(v, dec) {
+    var s = v.toFixed(dec);
+    var p = s.split('.');
+    p[0] = p[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return dec > 0 ? p[0] + ',' + p[1] : p[0];
+  }
+  function fmtEuro(v, dec) { return fmtNum(v, dec == null ? 2 : dec) + '€'; }
+  function fmtUsd(v, dec) { return fmtNum(v, dec == null ? 2 : dec) + ' USD'; }
+  function fmtPeso(v) { return (v % 1 === 0 ? fmtNum(v, 0) : fmtNum(v, 1)) + ' g'; }
+  function fmtPct(v) { return (v >= 0 ? '+' : '-') + Math.abs(v * 100).toFixed(1).replace('.', ',') + '%'; }
+  function fmtHora(d) { return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
+
+  function calcD(xag, fx, dataIso, aoVivo) {
+    return { xagUsd: xag, usdEur: fx, eurG: xag * fx / GRAMA, data: dataIso, aoVivo: !!aoVivo, hist: [], varDia: null, fonteHist: '' };
+  }
+  function toqueAtivo() {
+    var btn = document.querySelector('#lfc-prata-seg .lfc-prata-seg-btn.is-active');
+    var id = btn ? btn.getAttribute('data-toque') : '925';
+    for (var i = 0; i < TOQUES.length; i++) { if (TOQUES[i].id === id) return TOQUES[i]; }
+    return TOQUES[1];
+  }
+
+  /* Variação face ao último registo diário anterior à data da cotação (no máximo 6 dias antes) */
+  function variacaoDia(eurG, dataIso, hist) {
+    if (!hist || !hist.length) return null;
+    var t = new Date(dataIso + 'T00:00:00Z').getTime();
+    for (var i = hist.length - 1; i >= 0; i--) {
+      var h = hist[i];
+      if (!h || h.d >= dataIso || !(h.eur > 0)) continue;
+      var dias = (t - new Date(h.d + 'T00:00:00Z').getTime()) / 86400000;
+      return dias <= 6 ? eurG / h.eur - 1 : null;
+    }
+    return null;
+  }
+  /* Variação face ao último registo com pelo menos `dias` dias (tolerância de 7 dias) */
+  function variacaoPeriodo(eurG, dataIso, hist, dias) {
+    if (!hist || !hist.length) return null;
+    var alvo = new Date(dataIso + 'T00:00:00Z').getTime() - dias * 86400000;
+    for (var i = hist.length - 1; i >= 0; i--) {
+      var h = hist[i];
+      if (!h || !(h.eur > 0)) continue;
+      var t = new Date(h.d + 'T00:00:00Z').getTime();
+      if (t > alvo) continue;
+      return alvo - t <= 7 * 86400000 ? eurG / h.eur - 1 : null;
+    }
+    return null;
+  }
+  function frasePeriodos() {
+    var p = [
+      [variacaoPeriodo(D.eurG, D.data, D.hist, 7), 'em 7 dias'],
+      [variacaoPeriodo(D.eurG, D.data, D.hist, 30), 'em 30 dias'],
+      [variacaoPeriodo(D.eurG, D.data, D.hist, 365), 'num ano']
+    ].filter(function (x) { return typeof x[0] === 'number'; })
+     .map(function (x) { return '<strong>' + fmtPct(x[0]) + '</strong> ' + x[1]; });
+    if (!p.length) return '';
+    var lista = p.length > 1 ? p.slice(0, -1).join(', ') + ' e ' + p[p.length - 1] : p[0];
+    return ' Em euros, o preço varia ' + lista + '.';
+  }
+
+  /* H1 com a data na linha de baixo. O title tag fica o das definições SEO do Webflow. */
+  function syncTitulo() {
+    var base = 'Preço da prata hoje: grama de prata em euros';
+    var fresca = D.aoVivo || (Date.now() - new Date(D.data + 'T00:00:00').getTime()) < 12 * 86400000;
+    var h1 = document.querySelector('h1');
+    if (h1 && /prata/i.test(h1.textContent)) {
+      h1.innerHTML = fresca ? base + '<span class="lfc-prata-h1-data">(' + dataPT(D.data) + ')</span>' : base;
+    }
+  }
+
+  function setVar(el, v) {
+    if (!el) return;
+    var cls = v >= 0.0005 ? 'is-up' : (v <= -0.0005 ? 'is-down' : 'is-flat');
+    el.classList.remove('is-up', 'is-down', 'is-flat');
+    el.classList.add(cls);
+    el.textContent = fmtPct(v);
+  }
+
+  function renderCards() {
+    var fina = document.querySelector('#lfc-prata-card-fina [data-fina]');
+    var kg = document.querySelector('#lfc-prata-card-kg [data-kg]');
+    var p925 = document.querySelector('#lfc-prata-card-kg [data-p925]');
+    if (fina) fina.textContent = fmtEuro(D.eurG);
+    if (kg) kg.textContent = fmtEuro(D.eurG * 1000);
+    if (p925) p925.textContent = fmtEuro(D.eurG * 0.925);
+    var chips = document.getElementById('lfc-prata-chips');
+    if (!chips) return;
+    var onca = '<span data-onca style="color:#202432;font-weight:700">' + fmtEuro(D.eurG * GRAMA) + '</span>';
+    if (typeof D.varDia === 'number') {
+      chips.innerHTML = 'Hoje: <span class="lfc-prata-var" data-var-dia></span> <span class="lfc-prata-prices-sep">·</span> Onça troy: ' + onca;
+      setVar(chips.querySelector('[data-var-dia]'), D.varDia);
+    } else {
+      chips.innerHTML = 'Onça troy: ' + onca + ' (' + fmtUsd(D.xagUsd) + ')';
+    }
+  }
+
+  function renderHeadline() {
+    var el = document.getElementById('lfc-prata-headline');
+    if (!el) return;
+    var dia = '';
+    if (typeof D.varDia === 'number' && Math.abs(D.varDia) >= 0.0005) {
+      dia = ' Face ao dia útil anterior, o preço ' + (D.varDia > 0 ? 'sobe' : 'desce') + ' cerca de ' + fmtPct(D.varDia).replace('+', '').replace('-', '') + '.';
+    }
+    el.innerHTML = 'A <strong>' + dataPT(D.data) + '</strong>, um grama de <strong>prata fina</strong> vale cerca de <strong>' + fmtEuro(D.eurG) + '</strong> (' + fmtUsd(D.xagUsd) + ' por onça troy, convertido ao câmbio do BCE) e um quilo vale cerca de <strong>' + fmtEuro(D.eurG * 1000) + '</strong>. Na <strong>prata 925</strong>, o metal vale cerca de <strong>' + fmtEuro(D.eurG * 0.925) + '</strong> por grama.' + dia + frasePeriodos();
+  }
+
+  function renderStatus() {
+    var dataEl = document.getElementById('lfc-prata-data-atualizado');
+    var fonteEl = document.getElementById('lfc-prata-status-fonte');
+    var dot = document.getElementById('lfc-prata-dot');
+    if (dataEl) dataEl.textContent = dataPT(D.data) + (D.aoVivo ? ' às ' + fmtHora(new Date()) : '');
+    if (D.aoVivo) {
+      if (fonteEl) fonteEl.textContent = 'Cotação spot e câmbio de referência do BCE';
+      if (dot) dot.classList.remove('is-off');
+    } else {
+      if (fonteEl) fonteEl.textContent = 'Valores de referência (fonte em direto indisponível)';
+      if (dot) dot.classList.add('is-off');
+    }
+  }
+
+  function renderToques() {
+    var tbody = document.getElementById('lfc-prata-toques-tbody');
+    if (!tbody) return;
+    var html = '';
+    for (var i = 0; i < TOQUES.length; i++) {
+      var t = TOQUES[i];
+      html += '<div class="lfc-prata-tq-row">' +
+        '<div class="lfc-prata-tq-cell">' + t.id + (t.sub ? ' <span class="lfc-prata-tq-sub">· ' + t.sub + '</span>' : '') + '</div>' +
+        '<div class="lfc-prata-tq-cell">' + t.pct + '</div>' +
+        '<div class="lfc-prata-tq-cell is-valor">' + fmtEuro(D.eurG * t.f) + '</div>' +
+        '</div>';
+    }
+    tbody.innerHTML = html;
+  }
+
+  function renderCalc() {
+    var out = document.getElementById('lfc-prata-result');
+    if (!out) return;
+    var pesoEl = document.getElementById('lfc-prata-peso');
+    var bruto = pesoEl ? pesoEl.value.replace(/\./g, '').replace(',', '.') : '100';
+    var peso = parseFloat(bruto) || 0;
+    if (peso <= 0) { out.innerHTML = 'Indica o peso da peça em gramas para veres o valor.'; return; }
+    if (peso > 999999) peso = 999999;
+    var t = toqueAtivo();
+    var valor = peso * t.f * D.eurG;
+    out.innerHTML = 'A prata de uma peça de <strong>' + fmtPeso(peso) + '</strong> com toque <strong>' + t.id + (t.sub ? ' (' + t.sub + ')' : '') + '</strong> vale hoje cerca de <strong>' + fmtEuro(valor) + '</strong> (' + fmtEuro(D.eurG * t.f) + ' por grama). Numa loja de compra de prata, espera uma proposta abaixo deste valor - é a margem do comprador. Compara sempre 2 ou 3 propostas.';
+  }
+
+  function bindCalc() {
+    var seg = document.getElementById('lfc-prata-seg');
+    if (seg && !seg.__lfBound) {
+      seg.__lfBound = true;
+      seg.addEventListener('click', function (e) {
+        var btn = e.target.closest('.lfc-prata-seg-btn');
+        if (!btn) return;
+        seg.querySelectorAll('.lfc-prata-seg-btn').forEach(function (b) { b.classList.toggle('is-active', b === btn); });
+        renderCalc();
+      });
+    }
+    var pesoEl = document.getElementById('lfc-prata-peso');
+    if (pesoEl && !pesoEl.__lfBound) {
+      pesoEl.__lfBound = true;
+      pesoEl.addEventListener('input', function () {
+        /* só algarismos e uma vírgula decimal; separador de milhares com ponto */
+        var limpo = pesoEl.value.replace(/[^\d,]/g, '');
+        var partes = limpo.split(',');
+        var inteiro = partes[0].replace(/^0+(?=\d)/, '').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        var novo = partes.length > 1 ? inteiro + ',' + partes.slice(1).join('').slice(0, 1) : inteiro;
+        if (pesoEl.value !== novo) pesoEl.value = novo;
+        renderCalc();
+      });
+    }
+  }
+
+  function renderFaq() {
+    document.querySelectorAll('[data-faq-v]').forEach(function (el) {
+      var f = parseFloat(el.getAttribute('data-faq-v')) || 0;
+      var g = parseFloat(el.getAttribute('data-faq-g')) || 1;
+      if (f > 0) el.textContent = fmtEuro(D.eurG * f * g);
+    });
+  }
+
+  function hidePlaceholder() {
+    var all = document.querySelectorAll('div, p, span');
+    for (var i = 0; i < all.length; i++) {
+      var el = all[i];
+      if (el.children.length === 0 && /Preenche os dados e clica/.test(el.textContent)) {
+        var n = el;
+        while (n.parentElement && n.parentElement.textContent.replace(/\s+/g, ' ').trim() === el.textContent.replace(/\s+/g, ' ').trim() && !n.parentElement.classList.contains('padding-global')) {
+          n = n.parentElement;
+        }
+        n.style.display = 'none';
+        break;
+      }
+    }
+  }
+
+  /* Só o Article: o FAQPage vem do faq-schema.js do site, para não haver dois blocos */
+  function injectSchema() {
+    var s = document.createElement('script');
+    s.type = 'application/ld+json';
+    s.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: 'Preço da prata hoje: grama de prata em euros (' + dataPT(D.data) + ')',
+      inLanguage: 'pt-PT',
+      datePublished: '2026-11-26',
+      dateModified: D.data,
+      author: { '@type': 'Organization', name: 'Literacia Financeira', url: 'https://www.literaciafinanceira.pt' },
+      publisher: { '@type': 'Organization', name: 'Literacia Financeira', url: 'https://www.literaciafinanceira.pt' },
+      mainEntityOfPage: location.origin + location.pathname
+    });
+    document.head.appendChild(s);
+  }
+
+  function render() {
+    syncTitulo();
+    renderCards();
+    renderHeadline();
+    renderStatus();
+    renderToques();
+    renderCalc();
+    bindCalc();
+    renderFaq();
+    hidePlaceholder();
+
+    document.querySelectorAll('.all-results_wrapper').forEach(function (w) { w.style.display = 'flex'; });
+
+    window.__lfcPrataResults = D;
+    document.dispatchEvent(new CustomEvent('lfc-prata:updated', { detail: D }));
+
+    injectSchema();
+  }
+
+  function fetchJson(url) {
+    return new Promise(function (resolve) {
+      var ctl = ('AbortController' in window) ? new AbortController() : null;
+      var t = setTimeout(function () { if (ctl) ctl.abort(); resolve(null); }, 8000);
+      fetch(url, { cache: 'no-store', signal: ctl ? ctl.signal : undefined })
+        .then(function (r) { return r.json(); })
+        .then(function (j) { clearTimeout(t); resolve(j); })
+        .catch(function () { clearTimeout(t); resolve(null); });
+    });
+  }
+  function validaSpot(o, c) {
+    return o && typeof o.price === 'number' && o.price > 3 && o.price < 1000 &&
+      c && c.rates && typeof c.rates.EUR === 'number' && c.rates.EUR > 0.4 && c.rates.EUR < 2;
+  }
+  function validaReserva(g) {
+    var s = g && g.spot;
+    return s && typeof s.xagUsd === 'number' && s.xagUsd > 3 && s.xagUsd < 1000 &&
+      typeof s.usdEur === 'number' && s.usdEur > 0.4 && s.usdEur < 2 && typeof s.data === 'string';
+  }
+  function limpaHist(h) {
+    if (!Array.isArray(h)) return [];
+    return h.filter(function (x) { return x && typeof x.d === 'string' && typeof x.eur === 'number' && x.eur > 0.1 && x.eur < 20; });
+  }
+  function boot() {
+    Promise.all([
+      fetchJson(LF_PRATA.urlPrata),
+      fetchJson(LF_PRATA.urlCambio),
+      fetchJson(LF_PRATA.urlDados + '?v=' + hojeISO())
+    ]).then(function (res) {
+      if (validaSpot(res[0], res[1])) {
+        D = calcD(res[0].price, res[1].rates.EUR, hojeISO(), true);
+      } else if (validaReserva(res[2])) {
+        D = calcD(res[2].spot.xagUsd, res[2].spot.usdEur, res[2].spot.data, false);
+      } else {
+        D = calcD(LF_PRATA.fallback.xagUsd, LF_PRATA.fallback.usdEur, LF_PRATA.fallback.data, false);
+      }
+      if (res[2]) {
+        D.hist = limpaHist(res[2].hist);
+        D.fonteHist = res[2].fonteHist || '';
+      }
+      D.varDia = variacaoDia(D.eurG, D.data, D.hist);
+      render();
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();
+</script>

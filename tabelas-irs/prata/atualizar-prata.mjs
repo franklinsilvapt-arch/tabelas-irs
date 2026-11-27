@@ -143,6 +143,7 @@ async function main() {
     }
   }
   D.varDia = variacaoDia(D.eurG, hoje, hist);
+  D.hist = hist;
   const dia = new Date(`${hoje}T12:00:00Z`).getUTCDay();
   if (dia !== 0 && dia !== 6) hist = juntar(hist, [{ d: hoje, eur: Math.round(D.eurG * 10000) / 10000 }]);
 

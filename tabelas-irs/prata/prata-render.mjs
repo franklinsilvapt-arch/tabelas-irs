@@ -56,18 +56,45 @@ export function variacaoDia(eurG, dataIso, hist) {
   return null;
 }
 
-export function chips(D) {
-  if (typeof D.varDia === 'number') {
-    return `Hoje: <span class="lfc-prata-var ${classeVar(D.varDia)}" data-var-dia>${fmtPct(D.varDia)}</span>`;
+// Variação face ao último registo diário com pelo menos `dias` dias (tolerância de 7 dias).
+export function variacaoPeriodo(eurG, dataIso, hist, dias) {
+  if (!Array.isArray(hist)) return null;
+  const alvo = new Date(`${dataIso}T00:00:00Z`).getTime() - dias * 86400000;
+  for (let i = hist.length - 1; i >= 0; i--) {
+    const h = hist[i];
+    if (!h || !(h.eur > 0)) continue;
+    const t = new Date(`${h.d}T00:00:00Z`).getTime();
+    if (t > alvo) continue;
+    return alvo - t <= 7 * 86400000 ? eurG / h.eur - 1 : null;
   }
-  return `Onça troy: <span data-onca style="color:#202432;font-weight:700">${fmtUsd(D.xagUsd)}</span>`;
+  return null;
+}
+export function periodos(D) {
+  return { v7: variacaoPeriodo(D.eurG, D.data, D.hist, 7), v30: variacaoPeriodo(D.eurG, D.data, D.hist, 30), v365: variacaoPeriodo(D.eurG, D.data, D.hist, 365) };
+}
+export function chips(D) {
+  const onca = `<span data-onca style="color:#202432;font-weight:700">${fmtEuro(D.eurG * GRAMA)}</span>`;
+  if (typeof D.varDia === 'number') {
+    return `Hoje: <span class="lfc-prata-var ${classeVar(D.varDia)}" data-var-dia>${fmtPct(D.varDia)}</span> <span class="lfc-prata-prices-sep">·</span> Onça troy: ${onca}`;
+  }
+  return `Onça troy: ${onca} (${fmtUsd(D.xagUsd)})`;
+}
+export function frasePeriodos(D) {
+  const p = periodos(D);
+  const partes = [];
+  if (typeof p.v7 === 'number') partes.push(`<strong>${fmtPct(p.v7)}</strong> em 7 dias`);
+  if (typeof p.v30 === 'number') partes.push(`<strong>${fmtPct(p.v30)}</strong> em 30 dias`);
+  if (typeof p.v365 === 'number') partes.push(`<strong>${fmtPct(p.v365)}</strong> num ano`);
+  if (!partes.length) return '';
+  const lista = partes.length > 1 ? `${partes.slice(0, -1).join(', ')} e ${partes[partes.length - 1]}` : partes[0];
+  return ` Em euros, o preço varia ${lista}.`;
 }
 export function frase(D) {
   let dia = '';
   if (typeof D.varDia === 'number' && Math.abs(D.varDia) >= 0.0005) {
     dia = ` Face ao dia útil anterior, o preço ${D.varDia > 0 ? 'sobe' : 'desce'} cerca de ${fmtPct(D.varDia).replace('+', '').replace('-', '')}.`;
   }
-  return `A <strong>${dataPT(D.data)}</strong>, um grama de <strong>prata fina</strong> vale cerca de <strong>${fmtEuro(D.eurG)}</strong> (${fmtUsd(D.xagUsd)} por onça troy, convertido ao câmbio do BCE) e um quilo vale cerca de <strong>${fmtEuro(D.eurG * 1000)}</strong>. Na <strong>prata 925</strong>, o metal vale cerca de <strong>${fmtEuro(D.eurG * 0.925)}</strong> por grama.${dia}`;
+  return `A <strong>${dataPT(D.data)}</strong>, um grama de <strong>prata fina</strong> vale cerca de <strong>${fmtEuro(D.eurG)}</strong> (${fmtUsd(D.xagUsd)} por onça troy, convertido ao câmbio do BCE) e um quilo vale cerca de <strong>${fmtEuro(D.eurG * 1000)}</strong>. Na <strong>prata 925</strong>, o metal vale cerca de <strong>${fmtEuro(D.eurG * 0.925)}</strong> por grama.${dia}${frasePeriodos(D)}`;
 }
 export function linhasToques(D) {
   return TOQUES.map((t) => '<div class="lfc-prata-tq-row">' +
