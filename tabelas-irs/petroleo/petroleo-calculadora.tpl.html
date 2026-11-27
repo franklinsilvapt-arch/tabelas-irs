@@ -1,17 +1,22 @@
 <div id="lfc-pet">
-  <p class="lfc-pet-calc-sub">Escolhe a referência, indica o número de barris e vê quanto custam ao preço de agora, em dólares e em euros.</p>
+  <p class="lfc-pet-calc-sub">Escolhe a referência e a unidade (barris ou litros), indica a quantidade e vê quanto custa ao preço de agora, em dólares e em euros.</p>
 
   <div class="lfc-pet-seg" id="lfc-pet-seg">
     <button type="button" class="lfc-pet-seg-btn is-active" data-ref="brent">Brent</button>
     <button type="button" class="lfc-pet-seg-btn" data-ref="wti">WTI</button>
   </div>
 
+  <div class="lfc-pet-seg" id="lfc-pet-unid">
+    <button type="button" class="lfc-pet-seg-btn is-active" data-unid="barris">Barris</button>
+    <button type="button" class="lfc-pet-seg-btn" data-unid="litros">Litros</button>
+  </div>
+
   <div class="lfc-pet-inputs">
     <div class="lfc-pet-field">
-      <label for="lfc-pet-barris" class="form_label">Número de barris</label>
+      <label for="lfc-pet-barris" class="form_label" id="lfc-pet-qtd-label">Número de barris</label>
       <div class="input-text_wrapper">
         <input id="lfc-pet-barris" class="form_input is-normal" value="1" inputmode="decimal" maxlength="9" autocomplete="off">
-        <div class="input-text-position"><div class="text-size-medium"><div class="text-color-placeholder"><div>barris</div></div></div></div>
+        <div class="input-text-position"><div class="text-size-medium"><div class="text-color-placeholder"><div id="lfc-pet-qtd-suf">barris</div></div></div></div>
       </div>
     </div>
   </div>
@@ -27,6 +32,8 @@
     </div>
     <div id="lfc-pet-unidades-tbody">@@ROWS@@</div>
   </div>
+
+  <p class="lfc-pet-calc-sub lfc-pet-extremos" id="lfc-pet-extremos">@@EXTREMOS@@</p>
 
   <div class="lfc-pet-disclaimer">Valores indicativos do petróleo bruto, calculados com o contrato futuro mais próximo e o câmbio do momento. O preço da gasolina e do gasóleo depende também da refinação, do transporte, das margens e dos impostos. Esta página é informativa e não constitui aconselhamento financeiro.</div>
 </div>

@@ -125,6 +125,21 @@ export function resultado(D, barris = 1, ref = 'brent') {
   return `${txtBarris} de <strong>${nome}</strong> (${fmtNum(litros, 0)} litros) ${barris === 1 ? 'custa' : 'custam'} hoje cerca de <strong>${fmtUsd(usd * barris)}</strong>, ou seja <strong>${fmtEuro(usd * barris * D.usdEur)}</strong>. Este é o preço do petróleo bruto no mercado internacional, antes de refinação, transporte, margens e impostos.`;
 }
 
+// Fecho mais alto e mais baixo do Brent nos últimos 12 meses.
+export function extremos(D) {
+  const data = derivados(D).data;
+  const corte = new Date(new Date(`${data}T00:00:00Z`).getTime() - 365 * 86400000).toISOString().slice(0, 10);
+  const a = (D.hist || []).filter((h) => h.d >= corte);
+  if (a.length < 100) return null;
+  let max = a[0]; let min = a[0];
+  for (const h of a) { if (h.brent > max.brent) max = h; if (h.brent < min.brent) min = h; }
+  return { max, min };
+}
+export function fraseExtremos(D) {
+  const x = extremos(D);
+  return x ? `Nos últimos 12 meses, o fecho mais alto do Brent foi de <strong>${fmtUsd(x.max.brent)}</strong> (${dataPT(x.max.d)}) e o mais baixo de <strong>${fmtUsd(x.min.brent)}</strong> (${dataPT(x.min.d)}).` : '';
+}
+
 const embed = (html) => `<div data-rt-embed-type='true'>${html}</div>`;
 
 // Campos do item "Petróleo (hoje)" do CMS.
@@ -135,10 +150,13 @@ export function camposDoItem(D) {
     CHIPS_BRENT: chipsBrent(D, X), CHIPS_WTI: chipsWti(D, X),
     HEADLINE: frase(D), DATA: `${dataPT(X.data)} às ${X.hora}`
   });
-  const calc = preenche(modelo('petroleo-calculadora.tpl.html'), { RESULT: resultado(D), ROWS: linhasUnidades(D) });
+  const calc = preenche(modelo('petroleo-calculadora.tpl.html'), { RESULT: resultado(D), ROWS: linhasUnidades(D), EXTREMOS: fraseExtremos(D) });
+  const x = extremos(D);
   const faq = preenche(modelo('petroleo-faq.tpl.html'), {
     BRENT: fmtUsd(D.brent), BRENT_EUR: fmtEuro(X.eurBarril), LITRO: fmtEuro(X.eurLitro, 3),
-    WTI: D.wti ? fmtUsd(D.wti) : '-'
+    WTI: D.wti ? fmtUsd(D.wti) : '-',
+    MAX: x ? fmtUsd(x.max.brent) : '-', MAX_DATA: x ? dataPT(x.max.d) : '-',
+    MIN: x ? fmtUsd(x.min.brent) : '-', MIN_DATA: x ? dataPT(x.min.d) : '-'
   });
   const resumo = [X.data, X.hora, `Brent ${fmtUsd(D.brent)}`, `WTI ${D.wti ? fmtUsd(D.wti) : '-'}`,
     `${fmtEuro(X.eurBarril)}/barril`, `USD/EUR ${D.usdEur.toFixed(4)}`, `sessão ${typeof X.varDia === 'number' ? fmtPct(X.varDia) : 'n/d'}`].join(' | ');

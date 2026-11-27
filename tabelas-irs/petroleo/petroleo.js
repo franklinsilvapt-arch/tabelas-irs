@@ -117,17 +117,48 @@ var LF_PET = {
     var btn = document.querySelector('#lfc-pet-seg .lfc-pet-seg-btn.is-active');
     return btn && btn.getAttribute('data-ref') === 'wti' && D.wti ? 'wti' : 'brent';
   }
+  function emLitros() {
+    var btn = document.querySelector('#lfc-pet-unid .lfc-pet-seg-btn.is-active');
+    return !!btn && btn.getAttribute('data-unid') === 'litros';
+  }
+  /* Fecho mais alto e mais baixo do Brent nos últimos 12 meses */
+  function extremos() {
+    var corte = new Date(new Date(D.data + 'T00:00:00Z').getTime() - 365 * 86400000).toISOString().slice(0, 10);
+    var a = D.hist.filter(function (h) { return h.d >= corte; });
+    if (a.length < 100) return null;
+    var max = a[0], min = a[0];
+    a.forEach(function (h) { if (h.brent > max.brent) max = h; if (h.brent < min.brent) min = h; });
+    return { max: max, min: min };
+  }
+  function renderExtremos() {
+    var x = extremos();
+    var el = document.getElementById('lfc-pet-extremos');
+    if (el) el.innerHTML = x ? 'Nos últimos 12 meses, o fecho mais alto do Brent foi de <strong>' + fmtUsd(x.max.brent) + '</strong> (' + dataPT(x.max.d) + ') e o mais baixo de <strong>' + fmtUsd(x.min.brent) + '</strong> (' + dataPT(x.min.d) + ').' : '';
+    if (!x) return;
+    var m = { '[data-faq-max]': fmtUsd(x.max.brent), '[data-faq-max-data]': dataPT(x.max.d), '[data-faq-min]': fmtUsd(x.min.brent), '[data-faq-min-data]': dataPT(x.min.d) };
+    Object.keys(m).forEach(function (s) { document.querySelectorAll(s).forEach(function (e) { e.textContent = m[s]; }); });
+  }
   function renderCalc() {
     var out = document.getElementById('lfc-pet-result');
     if (!out) return;
     var el = document.getElementById('lfc-pet-barris');
-    var barris = parseFloat(el ? el.value.replace(/\./g, '').replace(',', '.') : '1') || 0;
-    if (barris <= 0) { out.innerHTML = 'Indica o número de barris para veres quanto custam.'; return; }
-    if (barris > 9999999) barris = 9999999;
+    var qtd = parseFloat(el ? el.value.replace(/\./g, '').replace(',', '.') : '1') || 0;
+    var litros = emLitros();
+    if (qtd <= 0) { out.innerHTML = 'Indica a quantidade para veres quanto custa.'; return; }
+    if (qtd > 999999999) qtd = 999999999;
+    var barris = litros ? qtd / LITROS : qtd;
     var wti = refAtiva() === 'wti';
     var usd = wti ? D.wti : D.brent;
-    var txt = barris === 1 ? '1 barril' : fmtNum(barris, barris % 1 === 0 ? 0 : 1) + ' barris';
-    out.innerHTML = txt + ' de <strong>' + (wti ? 'WTI' : 'Brent') + '</strong> (' + fmtNum(barris * LITROS, 0) + ' litros) ' + (barris === 1 ? 'custa' : 'custam') + ' hoje cerca de <strong>' + fmtUsd(usd * barris) + '</strong>, ou seja <strong>' + fmtEuro(usd * barris * D.usdEur) + '</strong>. Este é o preço do petróleo bruto no mercado internacional, antes de refinação, transporte, margens e impostos.';
+    var dec = qtd % 1 === 0 ? 0 : 1;
+    var txt, extra;
+    if (litros) {
+      txt = qtd === 1 ? '1 litro' : fmtNum(qtd, dec) + ' litros';
+      extra = fmtNum(barris, barris < 10 ? 2 : 1) + (barris === 1 ? ' barril' : ' barris');
+    } else {
+      txt = qtd === 1 ? '1 barril' : fmtNum(qtd, dec) + ' barris';
+      extra = fmtNum(qtd * LITROS, 0) + ' litros';
+    }
+    out.innerHTML = txt + ' de <strong>' + (wti ? 'WTI' : 'Brent') + '</strong> (' + extra + ') ' + (qtd === 1 ? 'custa' : 'custam') + ' hoje cerca de <strong>' + fmtUsd(usd * barris) + '</strong>, ou seja <strong>' + fmtEuro(usd * barris * D.usdEur) + '</strong>. Este é o preço do petróleo bruto no mercado internacional, antes de refinação, transporte, margens e impostos.';
   }
   function renderUnidades() {
     var tb = document.getElementById('lfc-pet-unidades-tbody');
@@ -138,16 +169,26 @@ var LF_PET = {
     tb.innerHTML = linha('Brent', D.brent, D.eurBarril) + (D.wtiEur ? linha('WTI', D.wti, D.wtiEur) : '');
   }
   function bindCalc() {
-    var seg = document.getElementById('lfc-pet-seg');
-    if (seg && !seg.__lfBound) {
+    ['lfc-pet-seg', 'lfc-pet-unid'].forEach(function (id) {
+      var seg = document.getElementById(id);
+      if (!seg || seg.__lfBound) return;
       seg.__lfBound = true;
       seg.addEventListener('click', function (e) {
         var btn = e.target.closest('.lfc-pet-seg-btn');
         if (!btn) return;
         seg.querySelectorAll('.lfc-pet-seg-btn').forEach(function (b) { b.classList.toggle('is-active', b === btn); });
+        if (id === 'lfc-pet-unid') {
+          var l = emLitros();
+          var lab = document.getElementById('lfc-pet-qtd-label');
+          var suf = document.getElementById('lfc-pet-qtd-suf');
+          var inp = document.getElementById('lfc-pet-barris');
+          if (lab) lab.textContent = l ? 'Número de litros' : 'Número de barris';
+          if (suf) suf.textContent = l ? 'litros' : 'barris';
+          if (inp) inp.value = l ? '1.000' : '1';
+        }
         renderCalc();
       });
-    }
+    });
     var el = document.getElementById('lfc-pet-barris');
     if (el && !el.__lfBound) {
       el.__lfBound = true;
@@ -212,6 +253,7 @@ var LF_PET = {
     renderCalc();
     bindCalc();
     renderFaq();
+    renderExtremos();
     hidePlaceholder();
     document.querySelectorAll('.all-results_wrapper').forEach(function (w) { w.style.display = 'flex'; });
     window.__lfcPetResults = D;
@@ -253,7 +295,7 @@ var LF_PET = {
 (function () {
   var MESES = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
   var MESES_CURTOS = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
-  var RANGES = { '1m': 31, '3m': 92, '1a': 4000 };
+  var RANGES = { '1m': 31, '3m': 92, '6m': 183, '1a': 366 };
   var rangeAtivo = '3m';
   var HIST = [];
 
