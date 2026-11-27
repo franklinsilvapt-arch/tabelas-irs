@@ -1,0 +1,24 @@
+name: Procurar texto no site
+
+# Ferramenta de QA: procura um texto em todas as páginas do sitemap do literaciafinanceira.pt
+# (por exemplo para encontrar onde pôr links internos). O resultado fica no log da corrida.
+on:
+  workflow_dispatch:
+    inputs:
+      termo:
+        description: 'Expressão a procurar (regex, por exemplo petróleo|Brent)'
+        required: true
+      destino:
+        description: 'Link de destino, para marcar as páginas que já o têm (por exemplo /preco-do-petroleo)'
+        default: ''
+
+jobs:
+  procurar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node qa/procurar-texto.mjs "${{ inputs.termo }}" "${{ inputs.destino }}"
